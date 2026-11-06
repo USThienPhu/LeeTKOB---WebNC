@@ -8,7 +8,7 @@
 ## 1. QUY TẮC CỐT LÕI: TỰ ĐỘNG TRÍCH XUẤT VÀ GHI AUDIT LOG (`AI-LOG.md`)
 
 Mỗi khi người dùng trao đổi, gửi phản hồi hoặc giao nhiệm vụ cho AI Agent, **Agent có trách nhiệm tự động thu thập thông tin phiên làm việc, chuẩn hóa theo template môn học và ghi nối tiếp (append) vào file**:
-📁 `PA02/AI-AUDIT/AI-LOG.md`
+📁 `PA02/AI-LOG.md` *(đặt cùng cấp với file `AGENTS.md` ngay tại thư mục `PA02`, không dùng thư mục con `AI-AUDIT`)*
 
 ### 1.1. Căn cứ cấu trúc chuẩn từ `Template/AI-LOG-template.md`
 Quy trình ghi log dựa trên 5 nguyên tắc đạo đức học thuật của khóa học:
@@ -59,11 +59,11 @@ Khi phiên làm việc hoặc nhiệm vụ hoàn tất, Agent tự động phân
 
 ---
 
-### 1.4. Quy trình ghi Append (Nối tiếp) vào `PA02/AI-AUDIT/AI-LOG.md`
+### 1.4. Quy trình ghi Append (Nối tiếp) vào `PA02/AI-LOG.md`
 
 1. **Thời điểm kích hoạt:** Tự động thực hiện ở cuối mỗi task/phiên trao đổi, trước khi đưa ra câu trả lời tổng kết cho người dùng.
 2. **Kỹ thuật ghi nối tiếp:**
-   - Đọc nội dung hiện có của file `PA02/AI-AUDIT/AI-LOG.md`.
+   - Đọc nội dung hiện có của file `PA02/AI-LOG.md`.
    - Nếu file chưa có tiêu đề header của môn học, khởi tạo tiêu đề header.
    - Thêm 1 dòng trống hoặc phân cách `\n\n` và ghi nội dung entry mới vào cuối file (append).
    - **Tuyệt đối KHÔNG ghi đè (overwrite)** làm mất các mục log đã ghi trước đó.
@@ -78,7 +78,7 @@ Agent phải hoạt động theo 3 cấp độ phân quyền nghiêm ngặt sau:
 - Đọc mã nguồn, tài liệu dự án, hợp đồng API (`docs/contract/*.md`), và các file rubric trong workspace.
 - Chạy các lệnh kiểm tra cục bộ: format, lint, typecheck, unit tests và contract tests trong môi trường sandbox cô lập.
 - Tạo, chỉnh sửa mã nguồn tính năng và mã kiểm thử theo yêu cầu rõ ràng của người dùng.
-- Tự động trích xuất và ghi nối tiếp nhật ký vào `PA02/AI-AUDIT/AI-LOG.md`.
+- Tự động trích xuất và ghi nối tiếp nhật ký vào `PA02/AI-LOG.md`.
 
 ### 🟡 Ask First (Phải hỏi ý kiến người dùng trước khi thực hiện)
 - Sửa đổi cấu hình CI/CD (`.github/workflows/*`).
@@ -134,4 +134,4 @@ Agent không được coi một nhiệm vụ là "hoàn tất" nếu lệnh ki�
    - Contract tại `docs/contract/<endpoint>.md` là chân lý duy nhất (Single Source of Truth).
    - Khi có sự sai lệch giữa mã nguồn và Contract, mã nguồn phải được sửa để tuân thủ Contract.
 3. **Audit Trail:**
-   - Mọi thay đổi logic quan trọng phải có bằng chứng đối soát trong `PA02/AI-AUDIT/AI-LOG.md`.
+   - Mọi thay đổi logic quan trọng phải có bằng chứng đối soát trong `PA02/AI-LOG.md`.
