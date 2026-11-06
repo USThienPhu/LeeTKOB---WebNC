@@ -65,3 +65,12 @@ Kept: Toàn bộ cấu trúc tổng quan sản phẩm, kiến trúc rà soát 3 
 Changed: Chuyển toàn bộ các mục trong Tech Stack sang trạng thái đã chốt [x] (TypeScript, Express, ESLint v9, Prettier, tsc, Vitest, Supertest, GitHub Actions); cập nhật hướng dẫn cài đặt sang `npm install` (hoặc `npm ci`); chuyển toàn bộ trạng thái trong bảng Quality Gate thành `Active (Đã kích hoạt)`.
 Rejected: Không sửa đổi hoặc gỡ bỏ các cam kết an toàn về trần chi tiêu API và việc sử dụng mocks trong kiểm thử tự động.
 By hand: Người dùng phê duyệt việc hoàn tất khởi tạo dự án và trực tiếp chỉ đạo chuyển trạng thái tài liệu từ bản dự thảo sang chính thức.
+
+
+## 2026-11-06 — Soạn thảo hợp đồng API chi tiết cho endpoint GET /labs/{labId}/review-queue
+Tool: Antigravity
+Asked for: Tạo tệp hợp đồng API chi tiết đặt tại PA02/docs/contract/review-queue.md cho endpoint GET /labs/{labId}/review-queue theo chuẩn RFC-style, đáp ứng khung 21–25 điểm của Tiêu chí 5 Rubric PA#2.
+Kept: Đầy đủ 7 phần chuẩn mực: Định danh endpoint (v1.0 Stable), cơ chế phân quyền Role & Ownership Rule (chỉ TA phụ trách lớp sở hữu lab), tham số phân trang & lọc (page, limit, status, verdict), cấu trúc JSON Schema 200 OK (ReviewQueueItem[] và pagination), chuẩn lỗi sự cố RFC 9457 (400, 401, 403, 404), tính chất tài nguyên khi thay đổi và các ví dụ concrete cURL / JSON.
+Changed: Chi tiết hóa toàn bộ các mã lỗi sự cố RFC 9457 (type URI, title, status, detail, instance) cho từng kịch bản cụ thể (TA lớp khác, thiếu token, tham số sai) và chuẩn hóa danh mục enum lý do unsure (`model_unsure`, `schema_invalid`, `line_mismatch`, `timeout`, `cost_cap_exceeded`).
+Rejected: Không dùng định nghĩa quyền truy cập chung chung "đã xác thực"; từ chối cho phép role student hoặc TA không phụ trách lớp truy cập; loại bỏ các mẫu payload lỗi tự do không tuân thủ RFC 9457.
+By hand: Người dùng định hướng lựa chọn endpoint rà soát hàng đợi của TA, xác lập tiêu chuẩn chất lượng cao nhất của Rubric (21–25 điểm) và chỉ đạo cấu trúc các trường dữ liệu nghiệp vụ.
