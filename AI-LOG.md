@@ -92,3 +92,12 @@ Kept: Toàn bộ cấu trúc kiểu dữ liệu bám sát hợp đồng (Verdict
 Changed: Chuẩn hóa định dạng code qua Prettier để vượt qua chốt kiểm tra format:check; cấu hình đường dẫn import ESM (.js) tương thích chuẩn NodeNext module resolution.
 Rejected: Không dùng định dạng phản hồi lỗi tùy ý; kiên quyết áp dụng Content-Type application/problem+json và 5 trường chuẩn hóa theo Quy tắc 2 của AGENTS.md.
 By hand: Người dùng cung cấp danh mục cấu trúc types chi tiết và yêu cầu thiết kế bộ tạo mã lỗi chuyên biệt cho cột mốc PA#2.
+
+
+## 2026-11-07 — Xây dựng Middleware phân quyền và Route cho endpoint GET /labs/:labId/review-queue (Giai đoạn 4.2)
+Tool: Antigravity
+Asked for: Triển khai Giai đoạn 4.2 cho PA02: Xây dựng Middleware phân quyền auth.middleware.ts và Route review-queue.ts cho endpoint GET /labs/:labId/review-queue bám sát docs/contract/review-queue.md, tích hợp vào app.ts và chạy kiểm tra lint, typecheck.
+Kept: Cơ chế xác thực Bearer token với các test tokens (ta-class-1, ta-class-2, student-token), quy tắc xác thực quyền sở hữu bài lab (labId thuộc class-1), chặn truy cập trái phép từ sinh viên và TA lớp khác (403), thẩm định tham số truy vấn (page, limit, status, verdict trả về 400), danh sách mock 5 mục và logic phân trang chuẩn { items, pagination }.
+Changed: Mở rộng interface Express Request để chứa thông tin người dùng đã xác thực; tắt cảnh báo eslint cục bộ cho namespace declaration merging; tự động định dạng mã nguồn với Prettier để vượt qua chốt kiểm tra format.
+Rejected: Không dùng phản hồi lỗi JSON đơn giản mà tuân thủ tuyệt đối Problem Details RFC 9457; từ chối xử lý khi thiếu Bearer token hoặc query parameters ngoài phạm vi cho phép.
+By hand: Người dùng cung cấp quy trình xử lý 3 bước chi tiết (Check Lab & Ownership, Validate Query, Mock Data & Slicing Pagination) và kịch bản phân quyền giữa các lớp học.
