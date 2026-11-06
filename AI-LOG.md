@@ -74,3 +74,12 @@ Kept: Đầy đủ 7 phần chuẩn mực: Định danh endpoint (v1.0 Stable), 
 Changed: Chi tiết hóa toàn bộ các mã lỗi sự cố RFC 9457 (type URI, title, status, detail, instance) cho từng kịch bản cụ thể (TA lớp khác, thiếu token, tham số sai) và chuẩn hóa danh mục enum lý do unsure (`model_unsure`, `schema_invalid`, `line_mismatch`, `timeout`, `cost_cap_exceeded`).
 Rejected: Không dùng định nghĩa quyền truy cập chung chung "đã xác thực"; từ chối cho phép role student hoặc TA không phụ trách lớp truy cập; loại bỏ các mẫu payload lỗi tự do không tuân thủ RFC 9457.
 By hand: Người dùng định hướng lựa chọn endpoint rà soát hàng đợi của TA, xác lập tiêu chuẩn chất lượng cao nhất của Rubric (21–25 điểm) và chỉ đạo cấu trúc các trường dữ liệu nghiệp vụ.
+
+
+## 2026-11-06 — Bổ sung các quy tắc bắt nguồn từ sự cố thực tế vào AGENTS.md đạt tối đa Tiêu chí 1 Rubric PA#2
+Tool: Antigravity
+Asked for: Cập nhật AGENTS.md tại thư mục PA02 bổ sung tiểu mục 5.1 gồm 2 quy tắc có thể truy nguyên từ sự cố kỹ thuật thực tế (Prettier .prettierignore cho markdown và RFC 9457 Content-Type) kèm mã commit đối soát để đạt 15/15 điểm Tiêu chí 1 Rubric PA#2.
+Kept: Toàn bộ 4 thành phần cốt lõi theo Rubric (Stack, Commands, Conventions, Never đặc thù cho LeeTKOB), phân quyền 3 cấp độ (Allowed, Ask first, Never), cùng cơ chế tự động ghi nhật ký AI-LOG.md và sinh lệnh git commit.
+Changed: Thêm tiểu mục 5.1 vào AGENTS.md định nghĩa chi tiết 2 quy tắc bắt nguồn từ sự cố thực tế (Quy tắc 1: Cách ly tệp Markdown khỏi Prettier qua .prettierignore đối soát commit 6a2d1ca; Quy tắc 2: Chuẩn hóa bắt buộc Content-Type application/problem+json theo RFC 9457 đối soát commit 1a7a924); sắp xếp lại các quy ước chung vào tiểu mục 5.2.
+Rejected: Loại bỏ hoàn toàn các quy tắc chung chung mang tính khẩu hiệu ("viết code sạch", "cẩn thận khi code") nhằm thỏa mãn triệt để tiêu chuẩn 13–15 điểm của Tiêu chí 1 trong Rubric PA#2.
+By hand: Người dùng trực tiếp cung cấp bối cảnh sự cố kỹ thuật thực tế, đúc kết giải pháp và ấn định mã commit đối soát làm bằng chứng thẩm định cho buổi vấn đáp.

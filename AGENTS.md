@@ -116,12 +116,13 @@ Agent phải hoạt động theo 3 cấp độ phân quyền nghiêm ngặt sau:
 ## 3. TECH STACK & ARCHITECTURE (LeeTKOB)
 
 Dự án **LeeTKOB** là hệ thống thẩm định và rà soát ràng buộc bài tập lập trình C++ cho Trợ giảng (TA) trước khi công bố điểm:
-- **Ngôn ngữ & Runtime:** Node.js / TypeScript (hoặc Python tương thích theo dự án của nhóm).
+- **Ngôn ngữ & Runtime:** Node.js / TypeScript (v20+, ESM).
 - **Quality Gates:** 
-  - Linter: ESLint / Ruff / Biome
-  - Formatter: Prettier / Black
-  - Type Checker: `tsc --noEmit` / `mypy`
-  - Test Runner: Vitest / Jest / Pytest
+  - Linter: ESLint (v9 flat config)
+  - Formatter: Prettier
+  - Type Checker: TypeScript Compiler (`tsc --noEmit`)
+  - Test Runner: Vitest
+  - Contract Testing: Supertest
 - **Tiêu chuẩn API:** RESTful API tuân thủ đặc tả lỗi sự cố RFC 9457 (Problem Details).
 - **Cơ chế:** Phân trang (Pagination) đối với danh sách và tính lũy thừa (Idempotency) đối với các hành động thay đổi trạng thái (Create, Submit, Publish, Appeal).
 
@@ -145,6 +146,24 @@ Agent không được coi một nhiệm vụ là "hoàn tất" nếu lệnh ki�
 ---
 
 ## 5. CONVENTIONS & BEST PRACTICES
+
+### 5.1. Quy tắc bắt nguồn từ sự cố thực tế (Traceable Rules from Real Incidents)
+
+Mỗi quy tắc dưới đây được đúc kết trực tiếp từ các sự cố kỹ thuật thực tế đã xảy ra trong quá trình thiết lập Quality Gate và phát triển dự án LeeTKOB, có mã commit đối soát cụ thể:
+
+1. **Quy tắc 1: Phạm vi kiểm tra định dạng của Prettier (Code vs Documentation Isolation)**
+   - **Sự cố thực tế:** Trong lần đầu tiên chạy chốt kiểm tra `npm run check`, lệnh `npm run format:check` đã bị báo đỏ (exit code 1) do Prettier tự động quét cả các tệp tài liệu văn bản Markdown bài nộp (`AGENTS.md`, `AI-LOG.md`, `README.md`) và bắt lỗi thụt lề/ngắt dòng tự do của con người, làm tắc nghẽn luồng CI. Nhóm đã giải quyết bằng cách thiết lập `.prettierignore` để loại trừ `*.md`.
+   - **Quy tắc thi hành:** Các công cụ kiểm tra định dạng (format/linter) chỉ được phép quét và chuẩn hóa mã nguồn chương trình trong `src/` và `tests/`. Tuyệt đối không can thiệp vào các tệp tài liệu bài nộp Markdown (`*.md`) để bảo toàn định dạng tự nhiên của bảng biểu và nhật ký học thuật. Mọi cấu hình dự án phải duy trì tệp `.prettierignore` loại trừ `*.md`.
+   - **Dẫn chứng truy nguyên (Audit Evidence):** Commit `6a2d1ca` (*feat: setup quality gate harness with lint, format, typecheck and test*) và ghi chép trong `AI-LOG.md`.
+
+2. **Quy tắc 2: Bắt buộc chuẩn hóa Header lỗi theo RFC 9457 (Content-Type Enforcement)**
+   - **Sự cố thực tế:** Khi thiết kế và kiểm thử hợp đồng API ban đầu, trợ lý AI thường có xu hướng sinh phản hồi lỗi dưới dạng `Content-Type: application/json` thông thường và chỉ trả về `{ "error": "message" }`. Điều này vi phạm nghiêm ngặt yêu cầu đặc tả Problem Details của Rubric môn học và sẽ gây lỗi contract test.
+   - **Quy tắc thi hành:** Mọi phản hồi lỗi (HTTP 4xx, 5xx) trên toàn bộ hệ thống bắt buộc phải thiết lập chính xác HTTP Header `Content-Type: application/problem+json` và chứa đầy đủ 5 trường định danh bắt buộc: `type`, `title`, `status`, `detail`, `instance`. Tuyệt đối nghiêm cấm trả về lỗi dạng `application/json` thông thường hoặc thiếu các trường chuẩn hóa.
+   - **Dẫn chứng truy nguyên (Audit Evidence):** Commit `1a7a924` (*docs(contract): define RFC-compliant API contract for GET /labs/{labId}/review-queue*).
+
+---
+
+### 5.2. Các quy ước chung (General Conventions)
 
 1. **Commit Message:** Tuân thủ Conventional Commits:
    - `feat(...)`, `fix(...)`, `test(...)`, `chore(...)`, `docs(...)`
