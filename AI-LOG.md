@@ -110,3 +110,12 @@ Kept: Toàn bộ 8 nhóm kiểm thử hợp đồng sử dụng Vitest + Superte
 Changed: Nâng cấp hàm forbidden và notFound trong problem-details.ts cùng route review-queue.ts để gắn URI type chuẩn xác (#FORBIDDEN_LAB_ACCESS, #FORBIDDEN_ROLE, #lab-not-found); chạy chốt kiểm tra tổng thể npm run check đạt trạng thái xanh 100% (cả format, lint, typecheck và 9/9 tests pass).
 Rejected: Tuyệt đối không nới lỏng assertion hoặc sửa test giả mạo kết quả theo quy tắc Never của LeeTKOB; loại bỏ các bài test chỉ kiểm tra mã HTTP status mà bỏ qua body RFC 9457.
 By hand: Người dùng định nghĩa danh sách 8 ca kiểm thử hợp đồng độc lập bám sát khung 13–15 điểm của Tiêu chí 6 trong Rubric PA#2.
+
+
+## 2026-11-07 — Thiết lập quy trình CI GitHub Actions chặn merge khi lỗi kiểm soát chất lượng
+Tool: Antigravity
+Asked for: Tạo thư mục .github/workflows và tệp cấu hình CI GitHub Actions tại .github/workflows/ci.yml cho dự án LeeTKOB theo chuẩn Rubric PA#2: kích hoạt khi push/PR vào main, có concurrency, chạy trên ubuntu-latest, Node.js 20, npm ci, và thực thi 4 bước kiểm tra chất lượng.
+Kept: Cấu hình kích hoạt trên nhánh main (push và pull_request), cơ chế concurrency tự hủy build cũ (cancel-in-progress: true), môi trường ubuntu-latest với Node.js 20 và cache npm, lệnh cài đặt sạch npm ci, cùng 4 bước kiểm tra chất lượng độc lập tuần tự (format:check, lint, typecheck, test).
+Changed: Thiết lập cấu hình defaults.run.working-directory: PA02 và cache-dependency-path: PA02/package-lock.json để luồng CI thực thi chính xác trong thư mục mã nguồn PA02 của repository.
+Rejected: Không dùng lệnh cài đặt npm install tùy tiện trong môi trường CI mà bắt buộc dùng npm ci để đảm bảo tính tái lập (reproducibility); không gom gộp 4 bước kiểm tra thành 1 lệnh duy nhất trong CI để dễ dàng xác định chính xác bước kiểm tra bị đỏ khi xảy ra lỗi.
+By hand: Người dùng chỉ định yêu cầu cụ thể về cấu hình workflow, tên workflow, điều kiện trigger và thứ tự 4 bước kiểm tra chất lượng bắt buộc của Rubric.
