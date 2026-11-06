@@ -70,6 +70,23 @@ Khi phiên làm việc hoặc nhiệm vụ hoàn tất, Agent tự động phân
 
 ---
 
+### 1.5. Quy tắc bắt buộc: Tự động sinh đoạn lệnh Git Commit ở cuối phản hồi
+
+Nhằm hỗ trợ người dùng quản lý lịch sử Git mượt mà, đúng chuẩn và tiện lợi:
+- **Tại cuối mỗi câu trả lời/phản hồi tổng kết nhiệm vụ cho người dùng**, Agent **BẮT BUỘC** phải tự động tạo một khối mã (code block bash) chứa lệnh `git add` và `git commit`.
+- **Nội dung commit message** phải tuân thủ chuẩn **Conventional Commits**:
+  - Cấu trúc: `<type>(<scope>): <thông điệp ngắn gọn>`
+  - `<type>`: `feat` (tính năng mới), `fix` (sửa lỗi), `docs` (tài liệu/readme/log), `chore` (cấu hình/dọn dẹp), `test` (kiểm thử), `refactor` (tái cấu trúc).
+  - `<scope>`: Phạm vi thay đổi (ví dụ: `pa02`, `agents`, `readme`, `contract`, `ci`).
+- **Ví dụ định dạng xuất ra:**
+  ```bash
+  git add PA02/AGENTS.md PA02/AI-LOG.md
+  git commit -m "docs(agents): add git commit snippet generation rule to AGENTS.md"
+  ```
+- Đoạn lệnh này giúp người dùng chỉ cần nhấn nút "Copy" trong giao diện là có thể commit ngay lập tức mà không mất công soạn lệnh thủ công.
+
+---
+
 ## 2. PHÂN QUYỀN TRỢ LÝ AI (PERMISSIONS & SECRETS)
 
 Agent phải hoạt động theo 3 cấp độ phân quyền nghiêm ngặt sau:
@@ -79,6 +96,7 @@ Agent phải hoạt động theo 3 cấp độ phân quyền nghiêm ngặt sau:
 - Chạy các lệnh kiểm tra cục bộ: format, lint, typecheck, unit tests và contract tests trong môi trường sandbox cô lập.
 - Tạo, chỉnh sửa mã nguồn tính năng và mã kiểm thử theo yêu cầu rõ ràng của người dùng.
 - Tự động trích xuất và ghi nối tiếp nhật ký vào `PA02/AI-LOG.md`.
+- Tự động tạo đoạn mã `git commit` gợi ý ở cuối câu trả lời cho người dùng.
 
 ### 🟡 Ask First (Phải hỏi ý kiến người dùng trước khi thực hiện)
 - Sửa đổi cấu hình CI/CD (`.github/workflows/*`).
@@ -135,3 +153,4 @@ Agent không được coi một nhiệm vụ là "hoàn tất" nếu lệnh ki�
    - Khi có sự sai lệch giữa mã nguồn và Contract, mã nguồn phải được sửa để tuân thủ Contract.
 3. **Audit Trail:**
    - Mọi thay đổi logic quan trọng phải có bằng chứng đối soát trong `PA02/AI-LOG.md`.
+4. **Git Commit Snippet:** Luôn cung cấp đoạn lệnh git commit tương ứng ở cuối mỗi câu trả lời cho người dùng.

@@ -38,3 +38,12 @@ Kept: Cơ chế rà soát 3 lớp của LeeTKOB (Hard rules -> LLM review -> Hum
 Changed: Xây dựng phần Tech Stack dưới dạng checklist và bảng lệnh kiểm tra chất lượng (Verification Commands) kèm nhãn giữ chỗ [CẬP NHẬT KHI KHỞI TẠO DỰ ÁN] để nhóm dễ dàng hoàn thiện linh hoạt khi thiết lập repo.
 Rejected: Không áp đặt cứng các dependency hay framework cụ thể khi nhóm chưa khởi tạo dự án; tránh đưa các hướng dẫn triển khai phức tạp ngoài phạm vi cột mốc PA#2.
 By hand: Người dùng định nghĩa yêu cầu phân tách phần cố định (kiến trúc 3 lớp, spending cap, liên kết nộp bài) và phần động (placeholder lệnh kiểm tra).
+
+
+## 2026-11-06 — Thêm quy tắc tự động sinh lệnh Git commit vào AGENTS.md
+Tool: Antigravity
+Asked for: Thêm một rule vào AGENTS.md về việc tại cuối mỗi phần trả lời của AI, sinh ra đoạn git commit để người dùng dễ dàng copy khi cần commit.
+Kept: Toàn bộ cấu trúc hệ thống, quy tắc audit log và 3 cấp độ phân quyền trong AGENTS.md.
+Changed: Bổ sung mục 1.5 và mục 5.4 vào AGENTS.md quy định bắt buộc AI Agent phải tạo khối lệnh `git add` & `git commit` theo chuẩn Conventional Commits ở cuối mỗi phản hồi tổng kết tác vụ.
+Rejected: Không dùng commit message tùy tiện thiếu quy chuẩn; không bắt buộc người dùng phải tự soạn lệnh git thủ công.
+By hand: Người dùng trực tiếp đưa ra yêu cầu bổ sung rule sinh đoạn lệnh git commit nhằm tối ưu trải nghiệm tương tác và quản lý phiên bản.
