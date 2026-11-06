@@ -56,3 +56,12 @@ Kept: Thiết lập package.json với chuẩn ESM ("type": "module"), bộ scri
 Changed: Dừng tiến trình tải gói phụ thuộc npm install tự động theo thao tác hủy của người dùng để người dùng trực tiếp quản lý việc cài đặt các gói trên môi trường phát triển máy chủ.
 Rejected: Không bổ sung các thư viện trung gian ngoài danh mục chỉ định; không tiếp tục chạy lại lệnh npm install sau khi đã nhận chỉ thị hủy từ người dùng.
 By hand: Người dùng cung cấp đầy đủ danh mục dependencies, định nghĩa bộ scripts kiểm soát chất lượng chuẩn, và trực tiếp thao tác hủy lệnh cài đặt npm.
+
+
+## 2026-11-06 — Cập nhật trạng thái Tech Stack và Verification Commands trong README.md
+Tool: Antigravity
+Asked for: Cập nhật README.md tại thư mục PA02 để chuyển Tech Stack từ dạng dự kiến thành chính thức ([x]) và cập nhật trạng thái bảng Quality Gate thành Active (Đã kích hoạt).
+Kept: Toàn bộ cấu trúc tổng quan sản phẩm, kiến trúc rà soát 3 lớp (Hard rules -> LLM -> Human gate), chính sách trần chi tiêu mô hình và bảng liên kết tài liệu nộp bài PA#2.
+Changed: Chuyển toàn bộ các mục trong Tech Stack sang trạng thái đã chốt [x] (TypeScript, Express, ESLint v9, Prettier, tsc, Vitest, Supertest, GitHub Actions); cập nhật hướng dẫn cài đặt sang `npm install` (hoặc `npm ci`); chuyển toàn bộ trạng thái trong bảng Quality Gate thành `Active (Đã kích hoạt)`.
+Rejected: Không sửa đổi hoặc gỡ bỏ các cam kết an toàn về trần chi tiêu API và việc sử dụng mocks trong kiểm thử tự động.
+By hand: Người dùng phê duyệt việc hoàn tất khởi tạo dự án và trực tiếp chỉ đạo chuyển trạng thái tài liệu từ bản dự thảo sang chính thức.

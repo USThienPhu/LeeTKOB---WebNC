@@ -77,18 +77,18 @@ Tất cả các tài liệu bàn giao bắt buộc của Cột mốc PA#2 đư�
 
 ---
 
-## 4. Công nghệ dự kiến (Tech Stack)
+## 4. Công nghệ chính thức (Tech Stack)
 
-> *Ghi chú: Nhóm đang trong giai đoạn chuẩn bị khung kiểm thử. Các công nghệ cụ thể dưới đây sẽ được chốt chính thức ở Bước 2 khi khởi tạo repository.*
+Dự án LeeTKOB đã hoàn tất khởi tạo và chuẩn hóa bộ công nghệ chính thức theo stack Node.js (TypeScript) + Express:
 
-- [ ] **Ngôn ngữ & Nền tảng:** `TypeScript` / `Node.js` (hoặc `Python`)
-- [ ] **Web Framework:** Express / Fastify / Hono
-- [ ] **Linter:** ESLint / Biome / Ruff
-- [ ] **Formatter:** Prettier / Black
-- [ ] **Type Checker:** TypeScript Compiler (`tsc --noEmit`) / mypy
-- [ ] **Test Framework:** Vitest / Jest / Pytest
-- [ ] **Contract Testing:** Supertest / Pact / OpenAPI Schema Validator
-- [ ] **CI/CD:** GitHub Actions
+- [x] **Ngôn ngữ & Nền tảng:** `TypeScript` / `Node.js` (v20+, ESM)
+- [x] **Web Framework:** `Express`
+- [x] **Linter:** `ESLint` (v9 flat config)
+- [x] **Formatter:** `Prettier`
+- [x] **Type Checker:** `tsc --noEmit`
+- [x] **Test Framework:** `Vitest`
+- [x] **Contract Testing:** `Supertest`
+- [x] **CI/CD:** `GitHub Actions`
 
 ---
 
@@ -97,12 +97,11 @@ Tất cả các tài liệu bàn giao bắt buộc của Cột mốc PA#2 đư�
 ### 5.1. Khởi tạo môi trường
 
 ```bash
-# [CẬP NHẬT KHI KHỞI TẠO DỰ ÁN]
 # Sao chép tệp cấu hình môi trường mẫu
 cp .env.example .env
 
 # Cài đặt các gói phụ thuộc
-npm install   # hoặc pnpm install / poetry install
+npm install   # hoặc npm ci trên môi trường CI
 ```
 
 ### 5.2. Chốt kiểm soát chất lượng (Quality Gate)
@@ -111,10 +110,10 @@ Mỗi thao tác kiểm tra phải chạy được bằng **một lệnh duy nh�
 
 | Thao tác kiểm tra | Mục đích kiểm soát | Lệnh thực thi (Local & CI) | Trạng thái |
 | :--- | :--- | :--- | :--- |
-| **All-in-One Gate** | Chạy toàn bộ các bước kiểm tra chất lượng | `npm run check` | `[CẬP NHẬT KHI KHỞI TẠO DỰ ÁN]` |
-| **Lint** | Quét lỗi cú pháp, quy chuẩn code | `npm run lint` | `[CẬP NHẬT KHI KHỞI TẠO DỰ ÁN]` |
-| **Format Check** | Kiểm tra định dạng mã nguồn nhất quán | `npm run format:check` | `[CẬP NHẬT KHI KHỞI TẠO DỰ ÁN]` |
-| **Type Check** | Kiểm tra an toàn kiểu tĩnh | `npm run typecheck` | `[CẬP NHẬT KHI KHỞI TẠO DỰ ÁN]` |
-| **Unit & Contract Test** | Chạy toàn bộ kiểm thử đơn vị & kiểm thử hợp đồng | `npm run test` | `[CẬP NHẬT KHI KHỞI TẠO DỰ ÁN]` |
+| **All-in-One Gate** | Chạy toàn bộ các bước kiểm tra chất lượng | `npm run check` | `Active (Đã kích hoạt)` |
+| **Lint** | Quét lỗi cú pháp, quy chuẩn code | `npm run lint` | `Active (Đã kích hoạt)` |
+| **Format Check** | Kiểm tra định dạng mã nguồn nhất quán | `npm run format:check` | `Active (Đã kích hoạt)` |
+| **Type Check** | Kiểm tra an toàn kiểu tĩnh | `npm run typecheck` | `Active (Đã kích hoạt)` |
+| **Unit & Contract Test** | Chạy toàn bộ kiểm thử đơn vị & kiểm thử hợp đồng | `npm run test` | `Active (Đã kích hoạt)` |
 
 Agent và các thành viên nhóm cam kết chỉ merge mã nguồn vào nhánh `main` khi tất cả các kiểm tra trên đều hiển thị trạng thái **xanh (pass)**.
