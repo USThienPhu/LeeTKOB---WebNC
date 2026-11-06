@@ -47,3 +47,12 @@ Kept: Toàn bộ cấu trúc hệ thống, quy tắc audit log và 3 cấp độ
 Changed: Bổ sung mục 1.5 và mục 5.4 vào AGENTS.md quy định bắt buộc AI Agent phải tạo khối lệnh `git add` & `git commit` theo chuẩn Conventional Commits ở cuối mỗi phản hồi tổng kết tác vụ.
 Rejected: Không dùng commit message tùy tiện thiếu quy chuẩn; không bắt buộc người dùng phải tự soạn lệnh git thủ công.
 By hand: Người dùng trực tiếp đưa ra yêu cầu bổ sung rule sinh đoạn lệnh git commit nhằm tối ưu trải nghiệm tương tác và quản lý phiên bản.
+
+
+## 2026-11-06 — Khởi tạo cấu trúc mã nguồn Node.js (TypeScript) + Express và cấu hình Quality Gate
+Tool: Antigravity
+Asked for: Khởi tạo toàn bộ cấu trúc mã nguồn và cấu hình công cụ kiểm soát chất lượng cho thư mục PA02 theo stack Node.js (TypeScript) + Express gồm package.json, tsconfig.json, .prettierrc, eslint.config.js, vitest.config.ts, src/app.ts, src/server.ts và tests/sanity.test.ts.
+Kept: Thiết lập package.json với chuẩn ESM ("type": "module"), bộ scripts kiểm soát chất lượng 4 bước (check, lint, format:check, typecheck, test), tsconfig.json chuẩn NodeNext, cấu hình ESLint v9 Flat Config, .prettierrc, vitest.config.ts, cùng khung mã nguồn Express (GET /healthz) và kiểm thử sanity.test.ts.
+Changed: Dừng tiến trình tải gói phụ thuộc npm install tự động theo thao tác hủy của người dùng để người dùng trực tiếp quản lý việc cài đặt các gói trên môi trường phát triển máy chủ.
+Rejected: Không bổ sung các thư viện trung gian ngoài danh mục chỉ định; không tiếp tục chạy lại lệnh npm install sau khi đã nhận chỉ thị hủy từ người dùng.
+By hand: Người dùng cung cấp đầy đủ danh mục dependencies, định nghĩa bộ scripts kiểm soát chất lượng chuẩn, và trực tiếp thao tác hủy lệnh cài đặt npm.
