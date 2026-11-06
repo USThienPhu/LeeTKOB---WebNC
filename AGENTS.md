@@ -5,27 +5,68 @@
 
 ---
 
-## 1. QUY TẮC BẮT BUỘC: TỰ ĐỘNG GHI AUDIT LOG (`AI-LOG.md`)
+## 1. QUY TẮC CỐT LÕI: TỰ ĐỘNG TRÍCH XUẤT VÀ GHI AUDIT LOG (`AI-LOG.md`)
 
-Mỗi khi người dùng trao đổi, yêu cầu hỗ trợ hoặc giao nhiệm vụ cho AI Agent:
-1. **Agent bắt buộc phải tự động ghi nhận tiến trình / nội dung công việc** và cập nhật trực tiếp vào file:
-   `PA02/AI-AUDIT/AI-LOG.md`
-2. **Thời điểm cập nhật:** Ngay sau khi hoàn thành nhiệm vụ, hoặc trước khi trả lời phản hồi cuối cùng cho người dùng trong phiên làm việc/nhiệm vụ đó.
-3. **Format bắt buộc:** Tuân thủ chuẩn mực đánh giá môn học (được quy định tại `Template/AI-LOG-template.md` và Rubric PA#2 Tiêu chí 7):
+Mỗi khi người dùng trao đổi, gửi phản hồi hoặc giao nhiệm vụ cho AI Agent, **Agent có trách nhiệm tự động thu thập thông tin phiên làm việc, chuẩn hóa theo template môn học và ghi nối tiếp (append) vào file**:
+📁 `PA02/AI-AUDIT/AI-LOG.md`
+
+### 1.1. Căn cứ cấu trúc chuẩn từ `Template/AI-LOG-template.md`
+Quy trình ghi log dựa trên 5 nguyên tắc đạo đức học thuật của khóa học:
+1. **AI được cho phép và khuyến khích:** Khai báo trung thực 80% đóng góp của AI và hiểu rõ mã nguồn sẽ đạt điểm cao hơn việc giấu giếm rồi lúng túng trong buổi vấn đáp (oral exam).
+2. **Khai báo minh bạch tại file log này:** Đây là bằng chứng thẩm định (accountability), không phải là một đoạn transcript thô.
+3. **Bạn sở hữu mã nguồn:** Lời biện hộ *"Do AI tự sinh ra"* sẽ không được chấp nhận.
+4. **Vấn đáp trực tiếp:** Bất kỳ dòng code nào sinh viên/nhóm không giải thích được sẽ nhận 0 điểm.
+5. **Tuyệt đối không đưa secrets vào prompt:** Không API key, không dữ liệu người dùng thật, không bài làm của bạn học.
+
+---
+
+### 1.2. Format mục ghi (Entry Format)
+Mỗi mục log bắt buộc phải có đầy đủ 7 trường thông tin sau:
 
 ```markdown
-## <YYYY-MM-DD> — <Mô tả ngắn gọn công việc đang thực hiện>
-Tool: <Tên công cụ/AI đang dùng, ví dụ: Antigravity / Claude Code / Cursor / Copilot / none>
-Asked for: <Nhiệm vụ người dùng giao cho Agent, tóm tắt chính xác trong 1 câu>
-Kept: <Những gì Agent tạo ra mà người dùng/hệ thống giữ lại nguyên vẹn>
-Changed: <Những gì đã được viết lại, tinh chỉnh hoặc sửa chữa, và lý do vì sao>
-Rejected: <Những gì bị loại bỏ hoàn toàn, không chấp nhận, và lý do tại sao>
-By hand: <Những phần người dùng tự viết hoặc can thiệp thủ công>
+## <YYYY-MM-DD> — <what you were working on>
+Tool: <Claude Code / Copilot / Cursor / Antigravity / something else / none>
+Asked for: <the task you gave it, in one sentence>
+Kept: <what you took as it came>
+Changed: <what you rewrote, and why>
+Rejected: <what you threw away, and why>
+By hand: <the parts you wrote yourself>
 ```
 
-### Nguyên tắc ghi Log:
-- **Trung thực và cụ thể:** Tuyệt đối không ghi chung chung (như *"Đã làm xong frontend"* hay *"Fix bug"*). Dòng `Rejected` và `By hand` là hai mục được thẩm định kỹ nhất trong các buổi vấn đáp/oral exam.
-- **Tính lũy kế:** Ghi thêm mục mới (append) vào cuối hoặc đầu file log theo thứ tự thời gian rõ ràng, không làm mất các bản ghi nhật ký trước đó.
+---
+
+### 1.3. Hướng dẫn chi tiết Agent tự động trích xuất & điền thông tin
+
+Khi phiên làm việc hoặc nhiệm vụ hoàn tất, Agent tự động phân tích ngữ cảnh hội thoại để trích xuất:
+
+| Trường thông tin | Quy tắc trích xuất và cách điền của Agent |
+| :--- | :--- |
+| **`## <YYYY-MM-DD> — <task>`** | - Lấy ngày tháng hiện tại theo định dạng chuẩn ISO `YYYY-MM-DD`.<br>- Tóm tắt tên tính năng/đầu việc trong 3–8 từ (ví dụ: `setup contract tests for submission endpoint`, `configure quality gate CI`). |
+| **`Tool:`** | Tên công cụ / agent đang tương tác (ví dụ: `Antigravity`, `Claude Code`, `Cursor`, `Copilot`, hoặc `none`). |
+| **`Asked for:`** | Đọc yêu cầu của người dùng (`USER_REQUEST`), cô đọng lại thành **đúng 1 câu** nêu rõ mục tiêu chính xác mà người dùng mong muốn. |
+| **`Kept:`** | Liệt kê các đoạn mã, cấu hình, logic hoặc tài liệu do Agent tạo ra mà hệ thống/người dùng chấp nhận giữ nguyên vẹn. |
+| **`Changed:`** | Liệt kê những phần mã/ý tưởng ban đầu đã bị chỉnh sửa, tái cấu trúc hoặc tinh chỉnh lại. **Bắt buộc nêu rõ lý do** (ví dụ: *"Sửa lại assertion từ giá trị chung chung thành giá trị cụ thể theo RFC 9457 để test có thể fail"*). |
+| **`Rejected:`** | Liệt kê những đề xuất, file hoặc đoạn mã mà Agent đưa ra nhưng bị loại bỏ hoàn toàn. **Bắt buộc nêu lý do** (ví dụ: *"Bỏ đề xuất mock hàm kiểm tra quyền vì rubric yêu cầu contract test phải kiểm tra quyền thực tế"*). *(Đây là một trong 2 dòng được người chấm thi soi kỹ nhất)*. |
+| **`By hand:`** | Liệt kê những phần con người (người dùng) trực tiếp viết, hoặc các tham số/ràng buộc cốt lõi mà người dùng tự tay chỉ định tường minh. *(Dòng được thẩm định kỹ nhất tại buổi vấn đáp)*. |
+
+> ⚠️ **Lưu ý chống "Weak Log":**
+> Tuyệt đối không sinh log sơ sài như:
+> ```markdown
+> ## Week 3
+> Used AI for the frontend. Fixed some things.
+> ```
+> Mọi mục log yếu, không có dữ kiện đối soát hoặc để trống `Rejected` / `By hand` mà không có lý do sẽ khiến nhóm bị trừ điểm tiêu chí `AI-LOG.md` theo rubric.
+
+---
+
+### 1.4. Quy trình ghi Append (Nối tiếp) vào `PA02/AI-AUDIT/AI-LOG.md`
+
+1. **Thời điểm kích hoạt:** Tự động thực hiện ở cuối mỗi task/phiên trao đổi, trước khi đưa ra câu trả lời tổng kết cho người dùng.
+2. **Kỹ thuật ghi nối tiếp:**
+   - Đọc nội dung hiện có của file `PA02/AI-AUDIT/AI-LOG.md`.
+   - Nếu file chưa có tiêu đề header của môn học, khởi tạo tiêu đề header.
+   - Thêm 1 dòng trống hoặc phân cách `\n\n` và ghi nội dung entry mới vào cuối file (append).
+   - **Tuyệt đối KHÔNG ghi đè (overwrite)** làm mất các mục log đã ghi trước đó.
 
 ---
 
@@ -37,7 +78,7 @@ Agent phải hoạt động theo 3 cấp độ phân quyền nghiêm ngặt sau:
 - Đọc mã nguồn, tài liệu dự án, hợp đồng API (`docs/contract/*.md`), và các file rubric trong workspace.
 - Chạy các lệnh kiểm tra cục bộ: format, lint, typecheck, unit tests và contract tests trong môi trường sandbox cô lập.
 - Tạo, chỉnh sửa mã nguồn tính năng và mã kiểm thử theo yêu cầu rõ ràng của người dùng.
-- Tự động ghi chép và cập nhật tiến trình vào `PA02/AI-AUDIT/AI-LOG.md`.
+- Tự động trích xuất và ghi nối tiếp nhật ký vào `PA02/AI-AUDIT/AI-LOG.md`.
 
 ### 🟡 Ask First (Phải hỏi ý kiến người dùng trước khi thực hiện)
 - Sửa đổi cấu hình CI/CD (`.github/workflows/*`).
