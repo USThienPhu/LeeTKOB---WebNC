@@ -15,11 +15,13 @@ export function badRequest(
   res: Response,
   instance: string,
   detail: string,
-  invalidParams?: { name: string; reason: string }[]
+  invalidParams?: { name: string; reason: string }[],
+  typeSuffix = 'invalid-query-parameter',
+  title = 'Invalid Request Parameter'
 ): Response {
   return sendProblemDetails(res, {
-    type: `${PROBLEM_BASE_URL}/invalid-query-parameter`,
-    title: 'Invalid Request Parameter',
+    type: `${PROBLEM_BASE_URL}/${typeSuffix}`,
+    title,
     status: 400,
     detail,
     instance,
@@ -30,11 +32,13 @@ export function badRequest(
 export function unauthorized(
   res: Response,
   instance: string,
-  detail: string
+  detail: string,
+  typeSuffix = 'missing-token',
+  title = 'Authentication Required'
 ): Response {
   return sendProblemDetails(res, {
-    type: `${PROBLEM_BASE_URL}/missing-token`,
-    title: 'Authentication Required',
+    type: `${PROBLEM_BASE_URL}/${typeSuffix}`,
+    title,
     status: 401,
     detail,
     instance,
@@ -44,11 +48,13 @@ export function unauthorized(
 export function forbidden(
   res: Response,
   instance: string,
-  detail: string
+  detail: string,
+  typeSuffix = 'forbidden-access',
+  title = 'Forbidden Access'
 ): Response {
   return sendProblemDetails(res, {
-    type: `${PROBLEM_BASE_URL}/forbidden-access`,
-    title: 'Forbidden Access',
+    type: `${PROBLEM_BASE_URL}/${typeSuffix}`,
+    title,
     status: 403,
     detail,
     instance,
@@ -58,11 +64,13 @@ export function forbidden(
 export function notFound(
   res: Response,
   instance: string,
-  detail: string
+  detail: string,
+  typeSuffix = 'lab-not-found',
+  title = 'Lab Not Found'
 ): Response {
   return sendProblemDetails(res, {
-    type: `${PROBLEM_BASE_URL}/resource-not-found`,
-    title: 'Resource Not Found',
+    type: `${PROBLEM_BASE_URL}/${typeSuffix}`,
+    title,
     status: 404,
     detail,
     instance,

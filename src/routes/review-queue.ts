@@ -114,7 +114,9 @@ reviewQueueRouter.get(
       notFound(
         res,
         req.originalUrl,
-        `Bài thực hành với mã '${labId}' không tồn tại trong cơ sở dữ liệu.`
+        `Bài thực hành với mã '${labId}' không tồn tại trong cơ sở dữ liệu.`,
+        'lab-not-found',
+        'Lab Not Found'
       );
       return;
     }
@@ -124,7 +126,9 @@ reviewQueueRouter.get(
       forbidden(
         res,
         req.originalUrl,
-        'Sinh viên không có quyền truy cập hàng đợi rà soát của Trợ giảng.'
+        'Sinh viên không có quyền truy cập hàng đợi rà soát của Trợ giảng.',
+        'student-access-forbidden#FORBIDDEN_ROLE',
+        'Forbidden Role'
       );
       return;
     }
@@ -133,7 +137,9 @@ reviewQueueRouter.get(
       forbidden(
         res,
         req.originalUrl,
-        `Trợ giảng '${user.username}' không được phân công phụ trách lớp '${VALID_LAB_CLASS_ID}' sở hữu bài lab này.`
+        `Trợ giảng '${user.username}' không được phân công phụ trách lớp '${VALID_LAB_CLASS_ID}' sở hữu bài lab này.`,
+        'forbidden-lab-access#FORBIDDEN_LAB_ACCESS',
+        'Unauthorized Class Access'
       );
       return;
     }

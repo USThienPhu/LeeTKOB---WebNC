@@ -101,3 +101,12 @@ Kept: Cơ chế xác thực Bearer token với các test tokens (ta-class-1, ta-
 Changed: Mở rộng interface Express Request để chứa thông tin người dùng đã xác thực; tắt cảnh báo eslint cục bộ cho namespace declaration merging; tự động định dạng mã nguồn với Prettier để vượt qua chốt kiểm tra format.
 Rejected: Không dùng phản hồi lỗi JSON đơn giản mà tuân thủ tuyệt đối Problem Details RFC 9457; từ chối xử lý khi thiếu Bearer token hoặc query parameters ngoài phạm vi cho phép.
 By hand: Người dùng cung cấp quy trình xử lý 3 bước chi tiết (Check Lab & Ownership, Validate Query, Mock Data & Slicing Pagination) và kịch bản phân quyền giữa các lớp học.
+
+
+## 2026-11-07 — Xây dựng bộ kiểm thử hợp đồng toàn diện review-queue.contract.test.ts (Giai đoạn 4.3)
+Tool: Antigravity
+Asked for: Triển khai Giai đoạn 4.3 cho PA02: Viết bộ kiểm thử hợp đồng toàn diện tại tests/contract/review-queue.contract.test.ts với 8 nhóm ca kiểm thử độc lập (Happy path, Pagination, Filter, Ownership 403, Role violation 403, Missing token 401, Validation error 400, Not found 404), sau đó chạy npm run check đảm bảo xanh 100%.
+Kept: Toàn bộ 8 nhóm kiểm thử hợp đồng sử dụng Vitest + Supertest bám sát đặc tả docs/contract/review-queue.md, assert chặt chẽ cấu trúc schema 200 OK, phân trang không trùng lặp, và định dạng phản hồi lỗi RFC 9457 (Content-Type application/problem+json).
+Changed: Nâng cấp hàm forbidden và notFound trong problem-details.ts cùng route review-queue.ts để gắn URI type chuẩn xác (#FORBIDDEN_LAB_ACCESS, #FORBIDDEN_ROLE, #lab-not-found); chạy chốt kiểm tra tổng thể npm run check đạt trạng thái xanh 100% (cả format, lint, typecheck và 9/9 tests pass).
+Rejected: Tuyệt đối không nới lỏng assertion hoặc sửa test giả mạo kết quả theo quy tắc Never của LeeTKOB; loại bỏ các bài test chỉ kiểm tra mã HTTP status mà bỏ qua body RFC 9457.
+By hand: Người dùng định nghĩa danh sách 8 ca kiểm thử hợp đồng độc lập bám sát khung 13–15 điểm của Tiêu chí 6 trong Rubric PA#2.
