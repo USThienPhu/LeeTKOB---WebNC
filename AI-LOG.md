@@ -83,3 +83,12 @@ Kept: Toàn bộ 4 thành phần cốt lõi theo Rubric (Stack, Commands, Conven
 Changed: Thêm tiểu mục 5.1 vào AGENTS.md định nghĩa chi tiết 2 quy tắc bắt nguồn từ sự cố thực tế (Quy tắc 1: Cách ly tệp Markdown khỏi Prettier qua .prettierignore đối soát commit 6a2d1ca; Quy tắc 2: Chuẩn hóa bắt buộc Content-Type application/problem+json theo RFC 9457 đối soát commit 1a7a924); sắp xếp lại các quy ước chung vào tiểu mục 5.2.
 Rejected: Loại bỏ hoàn toàn các quy tắc chung chung mang tính khẩu hiệu ("viết code sạch", "cẩn thận khi code") nhằm thỏa mãn triệt để tiêu chuẩn 13–15 điểm của Tiêu chí 1 trong Rubric PA#2.
 By hand: Người dùng trực tiếp cung cấp bối cảnh sự cố kỹ thuật thực tế, đúc kết giải pháp và ấn định mã commit đối soát làm bằng chứng thẩm định cho buổi vấn đáp.
+
+
+## 2026-11-07 — Triển khai Types và bộ xử lý lỗi RFC 9457 cho Review Queue (Giai đoạn 4.1)
+Tool: Antigravity
+Asked for: Triển khai Giai đoạn 4.1 cho PA02: Định nghĩa Types và bộ xử lý lỗi RFC 9457 bám sát hợp đồng docs/contract/review-queue.md, gồm src/types/review-queue.types.ts và src/errors/problem-details.ts, sau đó chạy typecheck kiểm chứng.
+Kept: Toàn bộ cấu trúc kiểu dữ liệu bám sát hợp đồng (Verdict, UnsureReason, CodeEvidence, ReviewQueueItem, PaginationMetadata, ReviewQueueResponse, ProblemDetails, AuthUser) và hàm sendProblemDetails cùng các helper badRequest, unauthorized, forbidden, notFound.
+Changed: Chuẩn hóa định dạng code qua Prettier để vượt qua chốt kiểm tra format:check; cấu hình đường dẫn import ESM (.js) tương thích chuẩn NodeNext module resolution.
+Rejected: Không dùng định dạng phản hồi lỗi tùy ý; kiên quyết áp dụng Content-Type application/problem+json và 5 trường chuẩn hóa theo Quy tắc 2 của AGENTS.md.
+By hand: Người dùng cung cấp danh mục cấu trúc types chi tiết và yêu cầu thiết kế bộ tạo mã lỗi chuyên biệt cho cột mốc PA#2.
