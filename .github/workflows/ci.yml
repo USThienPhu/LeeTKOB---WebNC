@@ -17,10 +17,6 @@ jobs:
     name: Quality Gate (Format, Lint, Typecheck, Test)
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: PA02
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,9 +26,8 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: PA02/package-lock.json
 
-      - name: Install dependencies
+      - name: Install dependencies strictly
         run: npm ci
 
       - name: 1. Format check (Prettier)
