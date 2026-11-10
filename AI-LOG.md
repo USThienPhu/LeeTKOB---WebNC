@@ -119,3 +119,12 @@ Kept: Cấu hình kích hoạt trên nhánh main (push và pull_request), cơ ch
 Changed: Thiết lập cấu hình defaults.run.working-directory: PA02 và cache-dependency-path: PA02/package-lock.json để luồng CI thực thi chính xác trong thư mục mã nguồn PA02 của repository.
 Rejected: Không dùng lệnh cài đặt npm install tùy tiện trong môi trường CI mà bắt buộc dùng npm ci để đảm bảo tính tái lập (reproducibility); không gom gộp 4 bước kiểm tra thành 1 lệnh duy nhất trong CI để dễ dàng xác định chính xác bước kiểm tra bị đỏ khi xảy ra lỗi.
 By hand: Người dùng chỉ định yêu cầu cụ thể về cấu hình workflow, tên workflow, điều kiện trigger và thứ tự 4 bước kiểm tra chất lượng bắt buộc của Rubric.
+
+
+## 2026-11-10 — Khởi tạo tệp báo cáo PA2.md và thiết lập khung liên kết minh chứng kiểm soát chất lượng
+Tool: Antigravity
+Asked for: Dựa vào đề bài yêu cầu, viết tệp PA2.md ở thư mục gốc và chỉ ra các link PR, minh chứng còn thiếu cần người dùng cung cấp để hoàn thiện.
+Kept: Cấu trúc báo cáo chuẩn mực gồm 4 phần: Thông tin repo & branch protection, minh chứng chốt chặn hoạt động (PR #1 lint red/green check, commit 0c78977 contract break red check), lần chạy CI ứng với tag pa2, và bảng đối soát các tài liệu nộp bài.
+Changed: Điền sẵn các liên kết commit và PR đã truy nguyên được từ lịch sử Git thực tế (PR #1, commit 64c56f9, c8f9ecb, af94982, và commit 0c78977 trên nhánh test/contract-break-demo); đặt các placeholder có định dạng rõ ràng cho các link GitHub Actions run và ảnh chụp màn hình branch protection.
+Rejected: Không điền các URL giả định/bịa đặt không có thực; giữ nguyên liên kết tới các commit SHA thực tế trên repository https://github.com/USThienPhu/LeeTKOB---WebNC.
+By hand: Người dùng yêu cầu tạo file PA2.md và phối hợp cung cấp các link minh chứng từ GitHub Actions.
