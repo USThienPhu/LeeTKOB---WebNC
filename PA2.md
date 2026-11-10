@@ -49,7 +49,7 @@ Dưới đây là các minh chứng thực tế chứng minh chốt kiểm soát
   - *Thông điệp commit:* `chore: intentionally add unused variable to trigger lint error`
   - *Chi tiết lỗi:* Khai báo biến `const unusedVariable = 'gate-bites';` nhưng không sử dụng.
   - *Hành vi của CI:* Bước `2. Lint check (ESLint)` báo lỗi vi phạm `@typescript-eslint/no-unused-vars` với exit code 1. Toàn bộ workflow bị dừng lại, GitHub đánh dấu kiểm tra báo đỏ ❌ và **nút "Merge pull request" bị khóa hoàn toàn**.
-  - **Liên kết lần chạy CI báo đỏ:** [CI Run #`[ĐIỀN SỐ RUN CỦA COMMIT 64c56f9]`](https://github.com/USThienPhu/LeeTKOB---WebNC/actions/runs/`[RUN_ID_RED_LINT]`)
+  - **Liên kết lần chạy CI báo đỏ:** [CI Run #3](https://github.com/USThienPhu/LeeTKOB---WebNC/actions/runs/`[RUN_ID_RED_LINT]`)
 
 #### 🟢 Lần kiểm tra chuyển sang xanh (Green Check) — Mở khóa merge:
 - **Commit sửa lỗi:** [`c8f9ecb`](https://github.com/USThienPhu/LeeTKOB---WebNC/commit/c8f9ecb)
@@ -57,7 +57,7 @@ Dưới đây là các minh chứng thực tế chứng minh chốt kiểm soát
   - *Chi tiết sửa lỗi:* Loại bỏ hoàn toàn biến thừa `unusedVariable`.
   - *Hành vi của CI:* Cả 4 bước (`format:check`, `lint`, `typecheck`, `test`) đều báo xanh ✔️ với exit code 0. GitHub mở khóa cho phép merge vào `main`.
   - **Commit merge vào main:** [`af94982`](https://github.com/USThienPhu/LeeTKOB---WebNC/commit/af94982) (`Merge pull request #1 from USThienPhu/test/gate-bites-demo`).
-  - **Liên kết lần chạy CI báo xanh:** [CI Run #`[ĐIỀN SỐ RUN CỦA COMMIT c8f9ecb]`](https://github.com/USThienPhu/LeeTKOB---WebNC/actions/runs/`[RUN_ID_GREEN_LINT]`)
+  - **Liên kết lần chạy CI báo xanh:** [CI Run #5](https://github.com/USThienPhu/LeeTKOB---WebNC/actions/runs/`[RUN_ID_GREEN_LINT]`)
 
 ---
 
@@ -75,21 +75,21 @@ Dưới đây là các minh chứng thực tế chứng minh chốt kiểm soát
     > `Test 4: should reject with 403 Forbidden RFC 9457 when TA belongs to another class`  
     ngay lập tức bị thất bại (Expected: `403`, Received: `200`).
   - *Kết quả chốt chặn:* Lệnh test thất bại với exit code 1, workflow CI báo đỏ ❌ và ngăn chặn tuyệt đối mã nguồn vi phạm hợp đồng được tích hợp vào hệ thống.
-  - **Liên kết lần chạy CI phát hiện vỡ hợp đồng:** [CI Run #`[ĐIỀN SỐ RUN CỦA COMMIT 0c78977]`](https://github.com/USThienPhu/LeeTKOB---WebNC/actions/runs/`[RUN_ID_CONTRACT_BREAK]`)
-  - **Liên kết PR vi phạm hợp đồng (nếu có mở PR):** [PR #`[SỐ PR HOẶC GHI COMMITTED ON BRANCH]`](https://github.com/USThienPhu/LeeTKOB---WebNC/pull/`[PR_NUMBER]`)
+  - **Liên kết lần chạy CI phát hiện vỡ hợp đồng:** [CI Run #7](https://github.com/USThienPhu/LeeTKOB---WebNC/actions/runs/`[RUN_ID_CONTRACT_BREAK]`)
+  - **Liên kết PR vi phạm hợp đồng (nếu có mở PR):** [[COMMITTED ON BRANCH test/contract-break-demo]](https://github.com/USThienPhu/LeeTKOB---WebNC/tree/test/contract-break-demo)
 
 ---
 
 ## 3. Lần chạy CI ứng với Tag bài nộp `pa2` (Tag `pa2` CI Run)
 
 - **Tên Tag nộp bài:** `pa2`
-- **Commit được gắn Tag:** [`[CẬP NHẬT COMMIT HASH SAU KHI TẠO TAG PA2]`](https://github.com/USThienPhu/LeeTKOB---WebNC/commit/`[COMMIT_HASH_TAG_PA2]`)
-- **Liên kết lần chạy CI tương ứng:** [CI Run for tag pa2](https://github.com/USThienPhu/LeeTKOB---WebNC/actions/runs/`[RUN_ID_TAG_PA2]`)
+- **Commit được gắn Tag:** [`129f55a`](https://github.com/USThienPhu/LeeTKOB---WebNC/commit/129f55a5c03709f557c760b96a53f830ff112f47)
+- **Liên kết lần chạy CI tương ứng:** [CI Run #42785627554 (Tag pa2)](https://github.com/USThienPhu/LeeTKOB---WebNC/actions/runs/42785627554)
 - **Kết quả xác nhận:**
-  - `npm run format:check`: PASS ✔️
-  - `npm run lint`: PASS ✔️
-  - `npm run typecheck`: PASS ✔️
-  - `npm run test`: PASS 100% (9/9 tests pass) ✔️
+  - `npm run format:check`: PASS 
+  - `npm run lint`: PASS 
+  - `npm run typecheck`: PASS 
+  - `npm run test`: PASS 100% (9/9 tests pass) 
 
 ---
 

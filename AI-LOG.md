@@ -137,3 +137,12 @@ Kept: Cấu trúc bảng điểm tự đánh giá đối soát 7 tiêu chí theo
 Changed: Bổ sung chi tiết 2 mục bắt buộc về tính trung thực học thuật (What I did not manage: chưa có database thật và route publish; What I would do differently: thêm .prettierignore sớm và cấu hình husky pre-commit hook).
 Rejected: Không để trống mục What I did not manage theo cảnh báo trừ điểm trong template; không đưa ra các bằng chứng chung chung thiếu căn cứ đối soát.
 By hand: Người dùng yêu cầu áp dụng template chuẩn của môn học và định hướng điểm tự đánh giá 100/100.
+
+
+## 2026-11-10 — Cập nhật liên kết commit và CI run ứng với tag pa2 vào PA2.md
+Tool: Antigravity
+Asked for: Cập nhật liên kết commit và CI run ứng với tag pa2 (commit 129f55a5c03709f557c760b96a53f830ff112f47 và run 42785627554) vào tệp PA2.md.
+Kept: Cấu trúc toàn bộ báo cáo minh chứng PA2.md và thông tin đối soát của các mục kiểm tra khác.
+Changed: Thay thế placeholder tại Mục 3 của PA2.md bằng commit SHA 129f55a và liên kết GitHub Actions run 42785627554 tương ứng với tag nộp bài pa2.
+Rejected: Không dùng link run giả lập; áp dụng chính xác các liên kết thực tế trên GitHub do người dùng cung cấp.
+By hand: Người dùng trực tiếp gắn tag pa2 trên GitHub remote và cung cấp liên kết commit SHA cùng mã chạy run ID của GitHub Actions.
