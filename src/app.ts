@@ -3,7 +3,6 @@ import { reviewQueueRouter } from './routes/review-queue.js';
 
 const app = express();
 
-
 app.use(express.json());
 
 app.get('/healthz', (_req: Request, res: Response) => {
