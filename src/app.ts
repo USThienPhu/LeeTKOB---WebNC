@@ -3,7 +3,6 @@ import { reviewQueueRouter } from './routes/review-queue.js';
 
 const app = express();
 
-const unusedVariable = 123;
 
 app.use(express.json());
 
