@@ -133,14 +133,19 @@ reviewQueueRouter.get(
       return;
     }
 
+    // if (!user.assignedClassIds.includes(VALID_LAB_CLASS_ID)) {
+    //   forbidden(
+    //     res,
+    //     req.originalUrl,
+    //     `Trợ giảng '${user.username}' không được phân công phụ trách lớp '${VALID_LAB_CLASS_ID}' sở hữu bài lab này.`,
+    //     'forbidden-lab-access#FORBIDDEN_LAB_ACCESS',
+    //     'Unauthorized Class Access'
+    //   );
+    //   return;
+    // }
     if (!user.assignedClassIds.includes(VALID_LAB_CLASS_ID)) {
-      forbidden(
-        res,
-        req.originalUrl,
-        `Trợ giảng '${user.username}' không được phân công phụ trách lớp '${VALID_LAB_CLASS_ID}' sở hữu bài lab này.`,
-        'forbidden-lab-access#FORBIDDEN_LAB_ACCESS',
-        'Unauthorized Class Access'
-      );
+      // CỐ TÌNH PHÁ VỠ HỢP ĐỒNG: Trả về HTTP 200 thay vì 403 Forbidden theo RFC 9457
+      res.status(200).json({ items: [], message: 'Allowed by mistake' });
       return;
     }
 
