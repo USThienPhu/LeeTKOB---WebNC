@@ -1,9 +1,9 @@
 # Self-assessment — PA#2 (Harness & Quality Gate)
 
 **Submitted by:**
-- 23120327 — Thái Thiên Phú *(Thành viên đại diện)*
-- `[MSSV_2]` — `[Họ và tên thành viên 2]`
-- `[MSSV_3]` — `[Họ và tên thành viên 3]`
+- 23120319 — Trương Thành Phát
+- 23120327 — Thái Thiên Phú 
+- 23120380 — Huỳnh Lê Minh Triết
 
 **Total I claim:** 100 / 100
 

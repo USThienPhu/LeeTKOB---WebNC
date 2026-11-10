@@ -4,7 +4,11 @@
 > **Cột mốc:** PA#2 — Khung kiểm thử và Chốt kiểm soát chất lượng (Harness & Quality Gate)  
 > **Sản phẩm:** LeeTKOB  
 > **Kho lưu trữ (Repository):** [https://github.com/USThienPhu/LeeTKOB---WebNC](https://github.com/USThienPhu/LeeTKOB---WebNC) *(Chế độ công khai - Public)*  
-> **Tag nộp bài:** `pa2`
+> **Tag nộp bài:** `pa2`  
+> **Thành viên nhóm thực hiện:**
+> - 23120319 — Trương Thành Phát
+> - 23120327 — Thái Thiên Phú   
+> - 23120380 — Huỳnh Lê Minh Triết
 
 ---
 
@@ -22,8 +26,8 @@ Nhánh `main` được áp dụng chính sách bảo vệ nghiêm ngặt để �
   - `Quality Gate (Format, Lint, Typecheck, Test)`
 - **Do not allow bypassing the above settings:** Áp dụng cho cả Administrators.
 - **Minh chứng cài đặt:**
-  - *Hình ảnh cài đặt Branch Protection:* `[ĐÍNH KÈM ẢNH HOẶC LINK ẢNH: docs/images/branch-protection.png]`
-  - *(Xem ảnh chụp màn hình cài đặt trong thư mục `docs/images/` của kho lưu trữ).*
+  - *Hình ảnh cài đặt Branch Protection:* ![Branch Protection](docs/images/branch-protection.png)
+  - *(Xem tệp ảnh gốc tại [`docs/images/branch-protection.png`](docs/images/branch-protection.png)).*
 
 ---
 
@@ -49,7 +53,7 @@ Dưới đây là các minh chứng thực tế chứng minh chốt kiểm soát
   - *Thông điệp commit:* `chore: intentionally add unused variable to trigger lint error`
   - *Chi tiết lỗi:* Khai báo biến `const unusedVariable = 'gate-bites';` nhưng không sử dụng.
   - *Hành vi của CI:* Bước `2. Lint check (ESLint)` báo lỗi vi phạm `@typescript-eslint/no-unused-vars` với exit code 1. Toàn bộ workflow bị dừng lại, GitHub đánh dấu kiểm tra báo đỏ ❌ và **nút "Merge pull request" bị khóa hoàn toàn**.
-  - **Liên kết lần chạy CI báo đỏ:** [CI Run #3](https://github.com/USThienPhu/LeeTKOB---WebNC/actions/runs/`[RUN_ID_RED_LINT]`)
+  - **Liên kết lần chạy CI báo đỏ:** [CI Run #42780725276](https://github.com/USThienPhu/LeeTKOB---WebNC/actions/runs/42780725276)
 
 #### 🟢 Lần kiểm tra chuyển sang xanh (Green Check) — Mở khóa merge:
 - **Commit sửa lỗi:** [`c8f9ecb`](https://github.com/USThienPhu/LeeTKOB---WebNC/commit/c8f9ecb)
@@ -57,7 +61,7 @@ Dưới đây là các minh chứng thực tế chứng minh chốt kiểm soát
   - *Chi tiết sửa lỗi:* Loại bỏ hoàn toàn biến thừa `unusedVariable`.
   - *Hành vi của CI:* Cả 4 bước (`format:check`, `lint`, `typecheck`, `test`) đều báo xanh ✔️ với exit code 0. GitHub mở khóa cho phép merge vào `main`.
   - **Commit merge vào main:** [`af94982`](https://github.com/USThienPhu/LeeTKOB---WebNC/commit/af94982) (`Merge pull request #1 from USThienPhu/test/gate-bites-demo`).
-  - **Liên kết lần chạy CI báo xanh:** [CI Run #5](https://github.com/USThienPhu/LeeTKOB---WebNC/actions/runs/`[RUN_ID_GREEN_LINT]`)
+  - **Liên kết lần chạy CI báo xanh:** [CI Run #42781192474](https://github.com/USThienPhu/LeeTKOB---WebNC/actions/runs/42781192474)
 
 ---
 
@@ -75,7 +79,7 @@ Dưới đây là các minh chứng thực tế chứng minh chốt kiểm soát
     > `Test 4: should reject with 403 Forbidden RFC 9457 when TA belongs to another class`  
     ngay lập tức bị thất bại (Expected: `403`, Received: `200`).
   - *Kết quả chốt chặn:* Lệnh test thất bại với exit code 1, workflow CI báo đỏ ❌ và ngăn chặn tuyệt đối mã nguồn vi phạm hợp đồng được tích hợp vào hệ thống.
-  - **Liên kết lần chạy CI phát hiện vỡ hợp đồng:** [CI Run #7](https://github.com/USThienPhu/LeeTKOB---WebNC/actions/runs/`[RUN_ID_CONTRACT_BREAK]`)
+  - **Liên kết lần chạy CI phát hiện vỡ hợp đồng:** [CI Run #42782428342](https://github.com/USThienPhu/LeeTKOB---WebNC/actions/runs/42782428342)
   - **Liên kết PR vi phạm hợp đồng (nếu có mở PR):** [[COMMITTED ON BRANCH test/contract-break-demo]](https://github.com/USThienPhu/LeeTKOB---WebNC/tree/test/contract-break-demo)
 
 ---

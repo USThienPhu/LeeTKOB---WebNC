@@ -146,3 +146,12 @@ Kept: Cấu trúc toàn bộ báo cáo minh chứng PA2.md và thông tin đối
 Changed: Thay thế placeholder tại Mục 3 của PA2.md bằng commit SHA 129f55a và liên kết GitHub Actions run 42785627554 tương ứng với tag nộp bài pa2.
 Rejected: Không dùng link run giả lập; áp dụng chính xác các liên kết thực tế trên GitHub do người dùng cung cấp.
 By hand: Người dùng trực tiếp gắn tag pa2 trên GitHub remote và cung cấp liên kết commit SHA cùng mã chạy run ID của GitHub Actions.
+
+
+## 2026-11-10 — Cập nhật liên kết minh chứng CI Runs và thông tin nhóm vào PA2.md và SELF_ASSESSMENT_REPORT.md
+Tool: Antigravity
+Asked for: Cập nhật file PA2.md thay thế các mã [RUN_ID_...] bằng link thật từ GitHub Actions cho các lần chạy CI đỏ/xanh/contract-break và cập nhật thông tin 3 thành viên nhóm vào báo cáo.
+Kept: Toàn bộ cấu trúc báo cáo đối soát PA2.md và bảng tự đánh giá 100/100 trong SELF_ASSESSMENT_REPORT.md.
+Changed: Thay thế các placeholder [RUN_ID_RED_LINT], [RUN_ID_GREEN_LINT], [RUN_ID_CONTRACT_BREAK] bằng các liên kết GitHub Actions run thực tế (42780725276, 42781192474, 42782428342); cập nhật danh sách 3 thành viên (Trương Thành Phát - 23120319, Thái Thiên Phú - 23120327, Huỳnh Lê Minh Triết - 23120380) xếp theo thứ tự MSSV tăng dần.
+Rejected: Không giữ lại bất kỳ placeholder [RUN_ID_...] nào để đảm bảo tính xác thực tuyệt đối của minh chứng thẩm định Rubric; không xáo trộn thứ tự MSSV của nhóm.
+By hand: Người dùng cung cấp đầy đủ 3 liên kết GitHub Actions run ID thực tế và danh sách thành viên nhóm.
