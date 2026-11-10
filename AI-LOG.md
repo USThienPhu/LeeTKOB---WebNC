@@ -128,3 +128,12 @@ Kept: Cấu trúc báo cáo chuẩn mực gồm 4 phần: Thông tin repo & bran
 Changed: Điền sẵn các liên kết commit và PR đã truy nguyên được từ lịch sử Git thực tế (PR #1, commit 64c56f9, c8f9ecb, af94982, và commit 0c78977 trên nhánh test/contract-break-demo); đặt các placeholder có định dạng rõ ràng cho các link GitHub Actions run và ảnh chụp màn hình branch protection.
 Rejected: Không điền các URL giả định/bịa đặt không có thực; giữ nguyên liên kết tới các commit SHA thực tế trên repository https://github.com/USThienPhu/LeeTKOB---WebNC.
 By hand: Người dùng yêu cầu tạo file PA2.md và phối hợp cung cấp các link minh chứng từ GitHub Actions.
+
+
+## 2026-11-10 — Khởi tạo tệp báo cáo tự đánh giá SELF_ASSESSMENT_REPORT.md theo mẫu chuẩn môn học
+Tool: Antigravity
+Asked for: Dựa vào Template/SELF_ASSESSMENT_REPORT template.md, viết bản SELF_ASSESSMENT_REPORT.md theo 7 tiêu chí của Rubric PA#2 và lưu vào thư mục PA02.
+Kept: Cấu trúc bảng điểm tự đánh giá đối soát 7 tiêu chí theo Rubric PA#2, mức điểm tự nhận 100/100, cùng các bằng chứng tham chiếu cụ thể tới commit hash, file tài liệu, hợp đồng API và bộ kiểm thử.
+Changed: Bổ sung chi tiết 2 mục bắt buộc về tính trung thực học thuật (What I did not manage: chưa có database thật và route publish; What I would do differently: thêm .prettierignore sớm và cấu hình husky pre-commit hook).
+Rejected: Không để trống mục What I did not manage theo cảnh báo trừ điểm trong template; không đưa ra các bằng chứng chung chung thiếu căn cứ đối soát.
+By hand: Người dùng yêu cầu áp dụng template chuẩn của môn học và định hướng điểm tự đánh giá 100/100.
