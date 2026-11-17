@@ -43,3 +43,12 @@ Kept: All PA#02 existing contract types (`ReviewQueueItem`, `ProblemDetails`, `A
 Changed: Unified `Verdict` and `UnsureReason` into `src/types/constraint.types.ts` and re-exported seamlessly through `src/types/review-queue.types.ts` and `src/types/index.ts`.
 Rejected: Ad-hoc loosely-typed data structures between sandbox, hard-rules, LLM, and review queue modules; avoided breaking existing contract endpoints.
 By hand: Ran full CI gate (`format:check`, `lint`, `typecheck`, `test`), verified zero compilation or lint errors, and confirmed 100% test pass rate.
+
+
+## 2026-11-17 — author team task allocation and git workflow plan (divide-task.md)
+Tool: Antigravity (Gemini 3.8 Flash)
+Asked for: Create `divide-task.md` detailing cross-module data flow, 3-member task assignments, Git TDD strategy, and integration roadmap for PA#3.
+Kept: The 8-criterion rubric allocation, 9 sandbox security constraints, and existing PA02 TypeScript architecture.
+Changed: Structured cross-module data flow via Mermaid diagram based on `src/types/` contracts; added explicit anti-squash-merge rule to protect Criterion 7 scoring.
+Rejected: Vague responsibility boundaries or overlapping responsibilities without clear file ownership; rejected squash-merging pull requests.
+By hand: Mapped team member IDs (23120319, 23120327, 23120380), defined integration milestones (18/11 to 25/11), and specified git branch names.
