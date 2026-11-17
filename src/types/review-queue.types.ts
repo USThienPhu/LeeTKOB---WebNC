@@ -1,18 +1,21 @@
-export type Verdict = 'violation' | 'unsure' | 'pass';
+/**
+ * Review Queue & Web Interface Contracts (Member 3 - Web & Review Queue)
+ * CSC13114 - LeeTKOB PA#3 (Maintains 100% backward compatibility with PA#2)
+ */
 
-export type UnsureReason =
-  | 'model_unsure'
-  | 'schema_invalid'
-  | 'line_mismatch'
-  | 'timeout'
-  | 'cost_cap_exceeded';
+import type {
+  ConstraintDefinition,
+  EvidenceLine,
+  UnsureReason,
+  Verdict,
+} from './constraint.types.js';
+import type { TestCase } from './sandbox.types.js';
+
+export type { Verdict, UnsureReason };
 
 export type ReviewItemStatus = 'pending' | 'reviewed';
 
-export interface CodeEvidence {
-  line: number;
-  text: string;
-}
+export type CodeEvidence = EvidenceLine;
 
 export interface ReviewQueueItem {
   id: string;
@@ -23,7 +26,7 @@ export interface ReviewQueueItem {
   verdict: Verdict;
   suggestedDeduction: number;
   evidence: CodeEvidence[];
-  unsureReason: UnsureReason | null;
+  unsureReason: UnsureReason;
   status: ReviewItemStatus;
   reviewedBy: string | null;
   reviewedAt: string | null;
@@ -57,4 +60,25 @@ export interface AuthUser {
   username: string;
   role: 'admin' | 'ta' | 'student';
   assignedClassIds: string[];
+}
+
+/**
+ * Lab Entity Definition (Added for PA#3)
+ */
+export interface Lab {
+  id: string;
+  classId: string;
+  title: string;
+  statement: string;
+  testCases: TestCase[];
+  constraints: ConstraintDefinition[];
+}
+
+/**
+ * Publish Marks Action Guard (Added for PA#3 Human Gate)
+ */
+export interface PublishStatus {
+  canPublish: boolean;
+  unreviewedCount: number;
+  reasons?: string[];
 }
