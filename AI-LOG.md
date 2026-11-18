@@ -61,3 +61,12 @@ Kept: The exact attack specifications, socket checks, memory read-back loops, sl
 Changed: Structured the attack test files with exact numbering prefix (01-09) to match Criterion 2 row-by-row in the rubric.
 Rejected: Combining multiple security tests into a single file; maintained individual dedicated files for precise failure isolation.
 By hand: User provided the test logic and attack vectors designed to challenge container boundaries without compromising host infrastructure.
+
+
+## 2026-11-18 — create Vitest test suite for sandbox security minimums (Step 2 - TDD)
+Tool: Antigravity (Gemini 3.8 Flash)
+Asked for: Implement Step 2 (TDD): Create `tests/sandbox/runner.test.ts` to verify all 9 security minimums for the sandbox runner.
+Kept: The Vitest test cases asserting on network blocking, cpu limit, wall-clock kill, memory readback, process limit, output limit, non-root, no docker socket, and no secrets.
+Changed: Harmonized breach detection strings in `07`, `08`, `09` attack files; created clean stub in `src/sandbox/runner.ts` for valid TDD Red State compilation.
+Rejected: Writing runner implementation before tests; adhered strictly to TDD protocol (tests first).
+By hand: Verified Prettier formatting, ESLint compliance, and TypeScript compilation across the entire test suite.
