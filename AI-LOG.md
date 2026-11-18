@@ -52,3 +52,12 @@ Kept: The 8-criterion rubric allocation, 9 sandbox security constraints, and exi
 Changed: Structured cross-module data flow via Mermaid diagram based on `src/types/` contracts; added explicit anti-squash-merge rule to protect Criterion 7 scoring.
 Rejected: Vague responsibility boundaries or overlapping responsibilities without clear file ownership; rejected squash-merging pull requests.
 By hand: Mapped team member IDs (23120319, 23120327, 23120380), defined integration milestones (18/11 to 25/11), and specified git branch names.
+
+
+## 2026-11-18 — create 9 C++ sandbox attack test cases (Test First)
+Tool: Antigravity (Gemini 3.8 Flash)
+Asked for: Create 9 C++ security attack test cases in `tests/sandbox_attacks/` following TDD strategy for Member 1 (Infrastructure & Security).
+Kept: The exact attack specifications, socket checks, memory read-back loops, sleep duration, and environment variable names from user requirements.
+Changed: Structured the attack test files with exact numbering prefix (01-09) to match Criterion 2 row-by-row in the rubric.
+Rejected: Combining multiple security tests into a single file; maintained individual dedicated files for precise failure isolation.
+By hand: User provided the test logic and attack vectors designed to challenge container boundaries without compromising host infrastructure.
