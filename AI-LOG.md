@@ -88,3 +88,12 @@ Kept: The TDD test workflow simulating worker stoppage, job enqueuing, and resta
 Changed: Implemented `SubmissionQueue` with duplicate submission prevention and idempotent `storeResult`; implemented `JudgeWorker` with `startAndDrain` lifecycle.
 Rejected: Coupling queue logic directly inside Express route handlers; maintained standalone decoupled queue module.
 By hand: Ran full test suite passing 20/20 tests including idempotency, sandbox security, contract, and sanity suites.
+
+
+## 2026-11-18 — refine SubmissionQueue and JudgeWorker with primary key uniqueness and singleton exports
+Tool: Antigravity (Gemini 3.8 Flash)
+Asked for: Implement queue and worker (`src/queue/`) ensuring `submissionId` is a unique primary key and results are stored exactly once (idempotent).
+Kept: The verified `SubmissionQueue` and `JudgeWorker` core logic and idempotency test expectations.
+Changed: Enhanced `SubmissionQueue` with primary-key uniqueness check, job metadata retrieval (`getJob`), failure handling (`markFailed`), and added `src/queue/index.ts` re-exports with default singletons.
+Rejected: Allowing duplicate executions to overwrite existing verdicts in `resultsMap`; strictly enforced idempotent storage.
+By hand: Ran full CI verification suite with Vitest passing 20/20 tests, zero ESLint issues, and clean TypeScript compilation.

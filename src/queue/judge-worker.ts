@@ -4,13 +4,13 @@
  */
 
 import { runSandboxCode } from '../sandbox/runner.js';
-import type { SubmissionQueue } from './submission-queue.js';
+import { defaultSubmissionQueue, SubmissionQueue } from './submission-queue.js';
 
 export class JudgeWorker {
   private queue: SubmissionQueue;
   private isRunning = false;
 
-  constructor(queue: SubmissionQueue) {
+  constructor(queue: SubmissionQueue = defaultSubmissionQueue) {
     this.queue = queue;
   }
 
@@ -46,15 +46,32 @@ export class JudgeWorker {
         continue;
       }
 
-      // Execute code in sandbox
-      const result = await runSandboxCode({
-        sourceCode: job.sourceCode,
-        limits: job.limits,
-        testCases: job.testCases,
-      });
+      try {
+        // Execute code in sandbox
+        const result = await runSandboxCode({
+          sourceCode: job.sourceCode,
+          limits: job.limits,
+          testCases: job.testCases,
+        });
 
-      // Store result exactly once
-      await this.queue.storeResult(job.submissionId, result);
+        // Store result exactly once
+        await this.queue.storeResult(job.submissionId, result);
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        await this.queue.storeResult(job.submissionId, {
+          compileSuccess: false,
+          compileOutput: errorMessage,
+          status: 'RUNTIME_ERROR',
+          passedTests: 0,
+          totalTests: job.testCases.length,
+          cpuTimeMs: 0,
+          memoryKb: 0,
+          stdout: '',
+          stderr: errorMessage,
+        });
+        await this.queue.markFailed(job.submissionId);
+      }
     }
   }
 
@@ -76,13 +93,35 @@ export class JudgeWorker {
       return true;
     }
 
-    const result = await runSandboxCode({
-      sourceCode: job.sourceCode,
-      limits: job.limits,
-      testCases: job.testCases,
-    });
+    try {
+      const result = await runSandboxCode({
+        sourceCode: job.sourceCode,
+        limits: job.limits,
+        testCases: job.testCases,
+      });
 
-    await this.queue.storeResult(job.submissionId, result);
+      await this.queue.storeResult(job.submissionId, result);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      await this.queue.storeResult(job.submissionId, {
+        compileSuccess: false,
+        compileOutput: errorMessage,
+        status: 'RUNTIME_ERROR',
+        passedTests: 0,
+        totalTests: job.testCases.length,
+        cpuTimeMs: 0,
+        memoryKb: 0,
+        stdout: '',
+        stderr: errorMessage,
+      });
+      await this.queue.markFailed(job.submissionId);
+    }
     return true;
   }
 }
+
+/**
+ * Shared default singleton worker instance
+ */
+export const defaultJudgeWorker = new JudgeWorker(defaultSubmissionQueue);

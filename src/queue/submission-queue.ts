@@ -15,15 +15,14 @@ export class SubmissionQueue {
   private resultsMap = new Map<string, SandboxExecutionResult[]>();
 
   /**
-   * Enqueue a submission job for judging
+   * Enqueue a submission job for judging with unique primary key check
    */
   async enqueue(job: SubmissionJob): Promise<void> {
-    if (this.statusMap.get(job.submissionId) === 'completed') {
-      return; // Already completed (Idempotent)
-    }
+    const existingStatus = this.statusMap.get(job.submissionId);
 
-    if (this.statusMap.get(job.submissionId) === 'queued') {
-      return; // Already queued
+    // If job is already completed or currently queued, do not duplicate
+    if (existingStatus === 'completed' || existingStatus === 'queued') {
+      return;
     }
 
     this.jobMap.set(job.submissionId, job);
@@ -32,7 +31,7 @@ export class SubmissionQueue {
   }
 
   /**
-   * Dequeue the next pending job
+   * Dequeue the next pending job in FIFO order
    */
   async dequeue(): Promise<SubmissionJob | null> {
     const job = this.queue.shift();
@@ -41,6 +40,13 @@ export class SubmissionQueue {
       return job;
     }
     return null;
+  }
+
+  /**
+   * Get submission job details by ID
+   */
+  async getJob(submissionId: string): Promise<SubmissionJob | null> {
+    return this.jobMap.get(submissionId) ?? null;
   }
 
   /**
@@ -65,6 +71,13 @@ export class SubmissionQueue {
   }
 
   /**
+   * Mark a submission as failed
+   */
+  async markFailed(submissionId: string): Promise<void> {
+    this.statusMap.set(submissionId, 'failed');
+  }
+
+  /**
    * Get all stored results for a submission
    */
   async getResults(submissionId: string): Promise<SandboxExecutionResult[]> {
@@ -81,3 +94,8 @@ export class SubmissionQueue {
     this.resultsMap.clear();
   }
 }
+
+/**
+ * Shared default singleton queue instance
+ */
+export const defaultSubmissionQueue = new SubmissionQueue();
