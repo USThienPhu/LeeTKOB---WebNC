@@ -97,3 +97,12 @@ Kept: The verified `SubmissionQueue` and `JudgeWorker` core logic and idempotenc
 Changed: Enhanced `SubmissionQueue` with primary-key uniqueness check, job metadata retrieval (`getJob`), failure handling (`markFailed`), and added `src/queue/index.ts` re-exports with default singletons.
 Rejected: Allowing duplicate executions to overwrite existing verdicts in `resultsMap`; strictly enforced idempotent storage.
 By hand: Ran full CI verification suite with Vitest passing 20/20 tests, zero ESLint issues, and clean TypeScript compilation.
+
+
+## 2026-11-18 — update CI workflow to build sandbox Docker image and trigger on pa3 tag
+Tool: Antigravity (Gemini 3.8 Flash)
+Asked for: Update `.github/workflows/ci.yml` to build the sandbox Docker image before running automated Vitest tests.
+Kept: The existing 4-step quality gate workflow (Prettier, ESLint, TypeScript, Vitest) and Ubuntu runner environment.
+Changed: Added the 'Build Sandbox Docker Image' step using `docker/Dockerfile.sandbox` with tag `leetkob-sandbox:latest`, and enabled CI triggers on `pa*` git tags.
+Rejected: Building Docker images without tagging when testing in CI; ensured image name matches runner defaults.
+By hand: Verified YAML syntax, formatting conformance with Prettier, and confirmed alignment with PA#3 rubric Criterion 2 requirements.

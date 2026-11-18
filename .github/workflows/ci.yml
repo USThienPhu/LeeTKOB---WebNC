@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'pa*'
   pull_request:
     branches:
       - main
@@ -38,6 +40,9 @@ jobs:
 
       - name: 3. Type check (TypeScript)
         run: npm run typecheck
+
+      - name: Build Sandbox Docker Image
+        run: docker build -f docker/Dockerfile.sandbox -t leetkob-sandbox:latest .
 
       - name: 4. Automated tests (Vitest)
         run: npm run test
