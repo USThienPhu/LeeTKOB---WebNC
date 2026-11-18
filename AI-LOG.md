@@ -79,3 +79,12 @@ Kept: The Alpine 3.20 base image, g++ toolchain, non-root sandbox user UID 1000,
 Changed: Constructed hardened Docker execution arguments (`--network none`, `--cpus 1.0`, `--memory 256m`, `--pids-limit 64`, read-only with tmpfs) and added container kill on wall-clock timeout; included development simulator fallback when Docker daemon is not active.
 Rejected: Running unsafe shell commands directly on host; rejected mounting host directories or Docker socket into execution environment.
 By hand: Tested all 9 security attack test cases via Vitest, verifying 18/18 total test pass rate across the entire repository.
+
+
+## 2026-11-18 — implement queue idempotency tests, SubmissionQueue and JudgeWorker (Step 4)
+Tool: Antigravity (Gemini 3.8 Flash)
+Asked for: Implement Step 4: Write idempotency tests (`tests/queue/idempotency.test.ts`) and implement `SubmissionQueue` and `JudgeWorker` guaranteeing exactly-once judging.
+Kept: The TDD test workflow simulating worker stoppage, job enqueuing, and restart draining from rubric Criterion 2.
+Changed: Implemented `SubmissionQueue` with duplicate submission prevention and idempotent `storeResult`; implemented `JudgeWorker` with `startAndDrain` lifecycle.
+Rejected: Coupling queue logic directly inside Express route handlers; maintained standalone decoupled queue module.
+By hand: Ran full test suite passing 20/20 tests including idempotency, sandbox security, contract, and sanity suites.
