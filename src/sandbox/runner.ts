@@ -100,9 +100,9 @@ async function executeInDockerSandbox(
     '1000:1000',
     '--read-only',
     '--tmpfs',
-    '/tmp:rw,noexec,nosuid,size=64m',
+    '/tmp:rw,nosuid,size=64m,mode=1777',
     '--tmpfs',
-    '/sandbox:rw,exec,nosuid,size=64m',
+    '/sandbox:rw,exec,nosuid,size=64m,uid=1000,gid=1000,mode=1777',
     dockerImage,
     '/bin/bash',
     '-c',
@@ -118,7 +118,7 @@ async function executeInDockerSandbox(
     const startTime = Date.now();
     const child = spawn('docker', dockerArgs);
 
-    // Wall-clock kill timer
+    // Wall-clock kill timer (kills the entire container, not only process)
     const wallClockTimer = setTimeout(() => {
       wallTimeExceeded = true;
       try {
@@ -153,10 +153,15 @@ async function executeInDockerSandbox(
 
       let status: ExecutionStatus = 'ACCEPTED';
 
-      if (wallTimeExceeded || code === 152) {
-        status = 'TIME_LIMIT_EXCEEDED';
-      } else if (outputLimitExceeded) {
+      if (outputLimitExceeded) {
         status = 'OUTPUT_LIMIT_EXCEEDED';
+      } else if (
+        wallTimeExceeded ||
+        code === 152 ||
+        stderr.includes('CPU time limit') ||
+        stderr.includes('time limit')
+      ) {
+        status = 'TIME_LIMIT_EXCEEDED';
       } else if (
         code === 137 ||
         stderr.includes('Killed') ||
@@ -166,6 +171,15 @@ async function executeInDockerSandbox(
         status = 'MEMORY_LIMIT_EXCEEDED';
       } else if (code !== 0) {
         status = 'RUNTIME_ERROR';
+      }
+
+      // Check test case match if tests are given
+      if (testCases.length > 0 && status === 'ACCEPTED') {
+        const expected = testCases[0].expectedOutput.trim();
+        const actual = stdout.trim();
+        if (expected.length > 0 && actual !== expected) {
+          status = 'WRONG_ANSWER';
+        }
       }
 
       const totalTests = testCases.length;

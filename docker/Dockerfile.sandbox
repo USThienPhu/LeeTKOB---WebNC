@@ -6,7 +6,7 @@ RUN apk add --no-cache g++ libstdc++ bash coreutils
 RUN adduser -D -u 1000 sandbox
 
 WORKDIR /sandbox
-RUN chown -R sandbox:sandbox /sandbox
+RUN chown -R sandbox:sandbox /sandbox && chmod 1777 /sandbox
 
 USER sandbox
 CMD ["/bin/bash"]

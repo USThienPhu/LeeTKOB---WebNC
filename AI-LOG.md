@@ -106,3 +106,12 @@ Kept: The existing 4-step quality gate workflow (Prettier, ESLint, TypeScript, V
 Changed: Added the 'Build Sandbox Docker Image' step using `docker/Dockerfile.sandbox` with tag `leetkob-sandbox:latest`, and enabled CI triggers on `pa*` git tags.
 Rejected: Building Docker images without tagging when testing in CI; ensured image name matches runner defaults.
 By hand: Verified YAML syntax, formatting conformance with Prettier, and confirmed alignment with PA#3 rubric Criterion 2 requirements.
+
+
+## 2026-11-18 — diagnose and resolve CI RUNTIME_ERROR failure for Docker sandbox and queue tests
+Tool: Antigravity (Gemini 3.8 Flash)
+Asked for: Analyze the cause of 6 test failures in GitHub Actions CI where tests returned `RUNTIME_ERROR` instead of expected statuses, and fix the underlying issues.
+Kept: The 9 security minimums and the test assertions in `idempotency.test.ts` and `runner.test.ts`.
+Changed: Identified and fixed root cause: Docker tmpfs mount permission denial on `/sandbox` for non-root user 1000 by adding `mode=1777,uid=1000,gid=1000` options; reordered exit code detection to prioritize `outputLimitExceeded` and `wallTimeExceeded` before exit code 137; ensured `04_memory_limit.cpp` emits `bad_alloc` to stderr upon allocation refusal.
+Rejected: Disabling security flags in CI; avoided running container as root.
+By hand: Verified CI log timing (250ms immediate abort), validated tmpfs mount ownership rules under non-root Docker, and confirmed local test pass rate (20/20).
