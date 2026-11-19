@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'pa*'
   pull_request:
     branches:
       - main
@@ -16,6 +18,7 @@ jobs:
   quality-gate:
     name: Quality Gate (Format, Lint, Typecheck, Test)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout repository
@@ -38,6 +41,9 @@ jobs:
 
       - name: 3. Type check (TypeScript)
         run: npm run typecheck
+
+      - name: Build Sandbox Docker Image
+        run: docker build -f docker/Dockerfile.sandbox -t leetkob-sandbox:latest .
 
       - name: 4. Automated tests (Vitest)
         run: npm run test
