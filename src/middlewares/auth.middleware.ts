@@ -13,6 +13,12 @@ declare global {
 /* eslint-enable @typescript-eslint/no-namespace */
 
 const MOCK_USERS: Record<string, AuthUser> = {
+  'admin-token': {
+    id: 'admin-001',
+    username: 'admin_root',
+    role: 'admin',
+    assignedClassIds: [],
+  },
   'ta-class-1': {
     id: 'ta-001',
     username: 'ta_instructor_1',
@@ -28,6 +34,12 @@ const MOCK_USERS: Record<string, AuthUser> = {
   'student-token': {
     id: 'std-100',
     username: 'student_user_1',
+    role: 'student',
+    assignedClassIds: ['class-1'],
+  },
+  'student-token-2': {
+    id: 'std-200',
+    username: 'student_user_2',
     role: 'student',
     assignedClassIds: ['class-1'],
   },

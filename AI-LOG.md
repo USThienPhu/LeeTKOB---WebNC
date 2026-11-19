@@ -147,3 +147,11 @@ Changed:
   - In `tests/sandbox_attacks/04_memory_limit.cpp`: implemented page-by-page read-back loop with a volatile checksum output as mandated by rubric Criterion 2 row 4, preventing GCC `-O2` dead-store optimization from removing the 1 GiB allocation.
 Rejected: Guessing exit code causes without accounting for compiler optimization behavior; rejected checking exit before close.
 By hand: Cross-referenced rubric line 154 warning ("nothing reads the memory back | compiler removed allocation"), verified 20/20 tests pass in 7.96s.
+
+## 2026-11-19 — add admin and second student authentication
+Tool: Codex
+Asked for: Add two Vitest and Supertest authentication tests, confirm Red before implementing the requested mock users, and pass npm run check with 22 tests.
+Kept: Two tests in tests/routes/auth.test.ts using the real authMiddleware on a test-only GET /healthz route and asserting the complete authenticated user payload; both requested MOCK_USERS entries.
+Changed: Used a test-only Express app because the production /healthz route is public and would return 200 even for unknown tokens; confirmed both tests failed with 401 before adding users, then npm run check passed formatting, lint, typecheck, and all 22 tests.
+Rejected: Testing tokens against the public health endpoint alone, because its unconditional 200 response cannot establish successful authentication.
+By hand: The user specified both test names, token values, user IDs, usernames, roles, class assignments, the test-first sequence, and the expected 22-test total; no additional manual edits were reported in this session.
