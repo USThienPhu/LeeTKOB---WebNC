@@ -3,63 +3,62 @@
  * CSC13114 - LeeTKOB PA#3 (Criterion 2)
  */
 
+import { randomUUID } from 'node:crypto';
+import { evaluateSubmission } from '../engine/constraint-adapter.js';
 import { runSandboxCode } from '../sandbox/runner.js';
+import { defaultDataStore, DataStore } from '../store/data-store.js';
+import type { SandboxExecutionResult } from '../types/sandbox.types.js';
 import { defaultSubmissionQueue, SubmissionQueue } from './submission-queue.js';
 
 export class JudgeWorker {
-  private queue: SubmissionQueue;
   private isRunning = false;
+  private isProcessing = false;
 
-  constructor(queue: SubmissionQueue = defaultSubmissionQueue) {
-    this.queue = queue;
-  }
+  constructor(
+    private readonly queue: SubmissionQueue = defaultSubmissionQueue,
+    private readonly dataStore: DataStore = defaultDataStore
+  ) {}
 
-  /**
-   * Stop worker from picking up new jobs
-   */
+  /** Stop picking up new jobs; the current job is allowed to finish. */
   stop(): void {
     this.isRunning = false;
   }
 
-  /**
-   * Start worker
-   */
   start(): void {
     this.isRunning = true;
   }
 
-  /**
-   * Start worker and process all pending jobs in queue until empty
-   */
+  /** Use the same pipeline for manual draining and background polling. */
   async startAndDrain(): Promise<void> {
-    this.isRunning = true;
+    this.start();
+    while (await this.processNext()) {
+      // Continue until stopped or the queue is empty.
+    }
+  }
 
-    while (this.isRunning) {
+  async processNext(): Promise<boolean> {
+    if (!this.isRunning || this.isProcessing) return false;
+    this.isProcessing = true;
+    try {
       const job = await this.queue.dequeue();
-      if (!job) {
-        break; // Queue is empty
+      if (!job) return false;
+      if ((await this.queue.getResults(job.submissionId)).length > 0) {
+        return true;
       }
 
-      // Check if job was already judged (Idempotent guarantee)
-      const existingResults = await this.queue.getResults(job.submissionId);
-      if (existingResults.length > 0) {
-        continue;
-      }
-
+      let result: SandboxExecutionResult;
+      let failed = false;
       try {
-        // Execute code in sandbox
-        const result = await runSandboxCode({
+        result = await runSandboxCode({
           sourceCode: job.sourceCode,
           limits: job.limits,
           testCases: job.testCases,
         });
-
-        // Store result exactly once
-        await this.queue.storeResult(job.submissionId, result);
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
-        await this.queue.storeResult(job.submissionId, {
+        failed = true;
+        result = {
           compileSuccess: false,
           compileOutput: errorMessage,
           status: 'RUNTIME_ERROR',
@@ -69,59 +68,44 @@ export class JudgeWorker {
           memoryKb: 0,
           stdout: '',
           stderr: errorMessage,
-        });
-        await this.queue.markFailed(job.submissionId);
+        };
       }
-    }
-  }
 
-  /**
-   * Process a single job if available
-   */
-  async processNext(): Promise<boolean> {
-    if (!this.isRunning) {
-      return false;
-    }
+      const lab = this.dataStore.getLab(job.labId);
+      if (lab && (result.compileSuccess || result.status === 'ACCEPTED')) {
+        const verdicts = evaluateSubmission(job.sourceCode, lab.constraints);
+        for (const verdict of verdicts) {
+          this.dataStore.addReviewItem({
+            id: randomUUID(),
+            labId: job.labId,
+            submissionId: job.submissionId,
+            studentAnonymousId: job.studentAnonymousId,
+            constraintId: verdict.constraintId,
+            constraintDescription: lab.constraints.find(
+              (constraint) => constraint.id === verdict.constraintId
+            )!.description,
+            verdict: verdict.verdict,
+            suggestedDeduction: verdict.suggestedDeduction,
+            evidence: verdict.evidence,
+            unsureReason: verdict.unsureReason,
+            status: 'pending',
+            reviewedBy: null,
+            reviewedAt: null,
+          });
+        }
+      }
 
-    const job = await this.queue.dequeue();
-    if (!job) {
-      return false;
-    }
-
-    const existingResults = await this.queue.getResults(job.submissionId);
-    if (existingResults.length > 0) {
-      return true;
-    }
-
-    try {
-      const result = await runSandboxCode({
-        sourceCode: job.sourceCode,
-        limits: job.limits,
-        testCases: job.testCases,
-      });
-
+      // Queue-only clients may not have a corresponding DataStore submission.
+      if (this.dataStore.getSubmission(job.submissionId)) {
+        this.dataStore.updateSubmissionResult(job.submissionId, result);
+      }
       await this.queue.storeResult(job.submissionId, result);
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      await this.queue.storeResult(job.submissionId, {
-        compileSuccess: false,
-        compileOutput: errorMessage,
-        status: 'RUNTIME_ERROR',
-        passedTests: 0,
-        totalTests: job.testCases.length,
-        cpuTimeMs: 0,
-        memoryKb: 0,
-        stdout: '',
-        stderr: errorMessage,
-      });
-      await this.queue.markFailed(job.submissionId);
+      if (failed) await this.queue.markFailed(job.submissionId);
+      return true;
+    } finally {
+      this.isProcessing = false;
     }
-    return true;
   }
 }
 
-/**
- * Shared default singleton worker instance
- */
-export const defaultJudgeWorker = new JudgeWorker(defaultSubmissionQueue);
+export const defaultJudgeWorker = new JudgeWorker();

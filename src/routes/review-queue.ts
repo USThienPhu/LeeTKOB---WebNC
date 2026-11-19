@@ -1,6 +1,7 @@
 import { Router, type Request, type Response } from 'express';
 import { badRequest, forbidden, notFound } from '../errors/problem-details.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { defaultDataStore } from '../store/data-store.js';
 import type {
   ReviewItemStatus,
   ReviewQueueItem,
@@ -88,6 +89,19 @@ const MOCK_REVIEW_QUEUE: ReviewQueueItem[] = [
   },
 ];
 
+// Preserve the PA#02 fixture while serving every lab from the shared store.
+defaultDataStore.createLab({
+  id: VALID_LAB_ID,
+  classId: VALID_LAB_CLASS_ID,
+  title: 'PA#02 review queue',
+  statement: '',
+  testCases: [],
+  constraints: [],
+});
+for (const item of MOCK_REVIEW_QUEUE) {
+  defaultDataStore.addReviewItem({ ...item, labId: VALID_LAB_ID });
+}
+
 const VALID_STATUSES: (ReviewItemStatus | 'all')[] = [
   'pending',
   'reviewed',
@@ -103,14 +117,18 @@ const VALID_VERDICTS: (Verdict | 'all')[] = [
 export const reviewQueueRouter = Router();
 
 reviewQueueRouter.get(
-  '/labs/:labId/review-queue',
+  [
+    '/labs/:labId/review-queue',
+    '/api/v1/classes/:classId/labs/:labId/review-queue',
+  ],
   authMiddleware,
-  (req: Request, res: Response) => {
-    const { labId } = req.params;
+  (req: Request<{ labId: string; classId?: string }>, res: Response) => {
+    const { labId, classId } = req.params;
     const user = req.user;
 
     // 1. Kiểm tra tồn tại bài lab
-    if (labId !== VALID_LAB_ID) {
+    const lab = defaultDataStore.getLab(labId);
+    if (!lab || (classId !== undefined && lab.classId !== classId)) {
       notFound(
         res,
         req.originalUrl,
@@ -133,11 +151,11 @@ reviewQueueRouter.get(
       return;
     }
 
-    if (!user.assignedClassIds.includes(VALID_LAB_CLASS_ID)) {
+    if (!user.assignedClassIds.includes(lab.classId)) {
       forbidden(
         res,
         req.originalUrl,
-        `Trợ giảng '${user.username}' không được phân công phụ trách lớp '${VALID_LAB_CLASS_ID}' sở hữu bài lab này.`,
+        `Trợ giảng '${user.username}' không được phân công phụ trách lớp '${lab.classId}' sở hữu bài lab này.`,
         'forbidden-lab-access#FORBIDDEN_LAB_ACCESS',
         'Unauthorized Class Access'
       );
@@ -186,33 +204,31 @@ reviewQueueRouter.get(
       return;
     }
 
-    // 4. Lọc dữ liệu theo status và verdict
-    let filtered = MOCK_REVIEW_QUEUE;
+    // 4. Lọc và phân trang dữ liệu từ DataStore.
+    const queue = defaultDataStore.getReviewQueue(labId, {
+      status: rawStatus as ReviewItemStatus | 'all',
+      verdict: rawVerdict as Verdict | 'all',
+      page: rawPage,
+      limit: rawLimit,
+    });
 
-    if (rawStatus !== 'all') {
-      filtered = filtered.filter((item) => item.status === rawStatus);
-    }
-
-    if (rawVerdict !== 'all') {
-      filtered = filtered.filter((item) => item.verdict === rawVerdict);
-    }
-
-    // 5. Phân trang dữ liệu
-    const totalItems = filtered.length;
-    const totalPages = totalItems === 0 ? 0 : Math.ceil(totalItems / rawLimit);
-    const startIndex = (rawPage - 1) * rawLimit;
-    const items = filtered.slice(startIndex, startIndex + rawLimit);
-
+    // Keep storage-only fields out of the PA#02 response schema.
     const responsePayload: ReviewQueueResponse = {
-      items,
-      pagination: {
-        page: rawPage,
-        limit: rawLimit,
-        totalItems,
-        totalPages,
-        hasNextPage: rawPage < totalPages,
-        hasPrevPage: rawPage > 1 && totalPages > 0,
-      },
+      items: queue.items.map((item) => ({
+        id: item.id,
+        submissionId: item.submissionId,
+        studentAnonymousId: item.studentAnonymousId,
+        constraintId: item.constraintId,
+        constraintDescription: item.constraintDescription,
+        verdict: item.verdict,
+        suggestedDeduction: item.suggestedDeduction,
+        evidence: item.evidence,
+        unsureReason: item.unsureReason,
+        status: item.status,
+        reviewedBy: item.reviewedBy,
+        reviewedAt: item.reviewedAt,
+      })),
+      pagination: queue.pagination,
     };
 
     res.status(200).json(responsePayload);
