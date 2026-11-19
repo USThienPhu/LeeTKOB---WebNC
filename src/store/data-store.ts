@@ -45,9 +45,24 @@ export interface StoredReviewQueueResponse extends ReviewQueueResponse {
 
 /** In-memory storage. Each instance owns its state; callers receive snapshots. */
 export class DataStore {
+  private readonly accounts = new Map<string, AuthUser>();
   private readonly labs = new Map<string, StoredLab>();
   private readonly submissions = new Map<string, StoredSubmission>();
   private readonly reviewItems = new Map<string, StoredReviewQueueItem>();
+
+  getAccountCount(): number {
+    return this.accounts.size;
+  }
+
+  createAccount(token: string, user: AuthUser): boolean {
+    if (this.accounts.has(token)) return false;
+    this.accounts.set(token, structuredClone(user));
+    return true;
+  }
+
+  getAccountByToken(token: string): AuthUser | null {
+    return structuredClone(this.accounts.get(token) ?? null);
+  }
 
   createLab(lab: Lab): Lab {
     if (this.labs.has(lab.id)) {

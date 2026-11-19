@@ -5,6 +5,9 @@
   "type": "module",
   "main": "dist/server.js",
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/server.js",
+    "seed:accounts": "tsx scripts/seed-accounts.ts",
     "dev": "tsx watch src/server.ts",
     "lint": "eslint .",
     "format:check": "prettier --check .",

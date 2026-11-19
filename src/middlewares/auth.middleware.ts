@@ -1,6 +1,8 @@
 import type { NextFunction, Request, Response } from 'express';
 import { unauthorized } from '../errors/problem-details.js';
 import type { AuthUser } from '../types/review-queue.types.js';
+import { defaultDataStore } from '../store/data-store.js';
+import { seedAccounts } from '../store/seed-accounts.js';
 
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global {
@@ -12,38 +14,8 @@ declare global {
 }
 /* eslint-enable @typescript-eslint/no-namespace */
 
-const MOCK_USERS: Record<string, AuthUser> = {
-  'admin-token': {
-    id: 'admin-001',
-    username: 'admin_root',
-    role: 'admin',
-    assignedClassIds: [],
-  },
-  'ta-class-1': {
-    id: 'ta-001',
-    username: 'ta_instructor_1',
-    role: 'ta',
-    assignedClassIds: ['class-1'],
-  },
-  'ta-class-2': {
-    id: 'ta-002',
-    username: 'ta_instructor_2',
-    role: 'ta',
-    assignedClassIds: ['class-2'],
-  },
-  'student-token': {
-    id: 'std-100',
-    username: 'student_user_1',
-    role: 'student',
-    assignedClassIds: ['class-1'],
-  },
-  'student-token-2': {
-    id: 'std-200',
-    username: 'student_user_2',
-    role: 'student',
-    assignedClassIds: ['class-1'],
-  },
-};
+// Initialize accounts when authentication is loaded during server startup.
+seedAccounts();
 
 export function authMiddleware(
   req: Request,
@@ -62,7 +34,7 @@ export function authMiddleware(
   }
 
   const token = authHeader.substring(7).trim();
-  const user = MOCK_USERS[token];
+  const user = defaultDataStore.getAccountByToken(token);
 
   if (!user) {
     unauthorized(
