@@ -155,3 +155,11 @@ Kept: Two tests in tests/routes/auth.test.ts using the real authMiddleware on a 
 Changed: Used a test-only Express app because the production /healthz route is public and would return 200 even for unknown tokens; confirmed both tests failed with 401 before adding users, then npm run check passed formatting, lint, typecheck, and all 22 tests.
 Rejected: Testing tokens against the public health endpoint alone, because its unconditional 200 response cannot establish successful authentication.
 By hand: The user specified both test names, token values, user IDs, usernames, roles, class assignments, the test-first sequence, and the expected 22-test total; no additional manual edits were reported in this session.
+
+## 2026-11-19 — implement test-first in-memory DataStore
+Tool: Codex
+Asked for: Write the 12 specified DataStore tests first, confirm Red, implement an in-memory store compatible with existing TypeScript contracts and export defaultDataStore, then pass npm run check without changing MOCK_REVIEW_QUEUE.
+Kept: tests/store/data-store.test.ts with all 12 requested cases; src/store/data-store.ts with maps for labs, submissions and review items, typed stored records, filtering before pagination, TA review metadata, publish readiness and defaultDataStore.
+Changed: Extended ReviewQueueItem locally with required labId and SubmissionJob with queued/completed status and nullable sandbox result because shared interfaces do not contain these storage fields; returned cloned snapshots to keep external mutation from changing stored state. The first sandboxed Vitest attempt hit spawn EPERM; rerunning outside the sandbox confirmed Red from the missing store module before implementation. Final npm run check passed formatting, lint, typecheck and all 34 tests (22 existing plus 12 new).
+Rejected: Changing the shared ReviewQueueItem contract or replacing MOCK_REVIEW_QUEUE in this phase, because the user requires compatibility and defers route integration; rejected counting the initial spawn EPERM as TDD Red because it was an environment failure.
+By hand: The user specified all 12 test names, Map/Array storage, required labId, singleton export, compatibility constraints, unchanged mock data and Red-to-Green workflow; no additional manual source edits were reported in this session.
