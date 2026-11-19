@@ -115,3 +115,15 @@ Kept: The 9 security minimums and the test assertions in `idempotency.test.ts` a
 Changed: Identified and fixed root cause: Docker tmpfs mount permission denial on `/sandbox` for non-root user 1000 by adding `mode=1777,uid=1000,gid=1000` options; reordered exit code detection to prioritize `outputLimitExceeded` and `wallTimeExceeded` before exit code 137; ensured `04_memory_limit.cpp` emits `bad_alloc` to stderr upon allocation refusal.
 Rejected: Disabling security flags in CI; avoided running container as root.
 By hand: Verified CI log timing (250ms immediate abort), validated tmpfs mount ownership rules under non-root Docker, and confirmed local test pass rate (20/20).
+
+
+## 2026-11-19 — resolve 6-hour CI hang with init reaper, closed stdin, execSync timeout, and failsafe timers
+Tool: Antigravity (Gemini 3.8 Flash)
+Asked for: Implement root-cause fixes for the 6-hour CI hang on GitHub Actions.
+Kept: All 20 test cases, 9 security attack scenarios, and Docker isolation flags.
+Changed:
+  - In `src/sandbox/runner.ts`: added `--init` to reap zombies from fork bombs, closed `child.stdin?.end()` to prevent unclosed pipe deadlocks, protected `killContainer` with `isTerminated` guard and `{ timeout: 2000 }` on `execSync`, destroyed stdout stream upon output limit breach, and added an absolute failsafe timer to guarantee Promise resolution.
+  - In `vitest.config.ts`: configured `testTimeout: 20000` and `hookTimeout: 20000`.
+  - In `.github/workflows/ci.yml`: added `timeout-minutes: 10` on the job level.
+Rejected: Allowing unclosed stdio streams or un-timeouted synchronous execution; rejected running container without init reaper.
+By hand: Ran full test suite verifying 20/20 tests pass in 10.88s with clean formatting, linting, and typechecking.

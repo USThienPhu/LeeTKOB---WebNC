@@ -82,8 +82,8 @@ async function executeInDockerSandbox(
 
   const dockerArgs = [
     'run',
-    '-i',
     '--rm',
+    '--init', // PID 1 reaper for clean process termination (prevents fork bomb hang)
     '--name',
     containerName,
     '--network',
@@ -114,43 +114,73 @@ async function executeInDockerSandbox(
     let stderr = '';
     let wallTimeExceeded = false;
     let outputLimitExceeded = false;
+    let isTerminated = false;
+    let resolved = false;
 
     const startTime = Date.now();
-    const child = spawn('docker', dockerArgs);
+    const child = spawn('docker', dockerArgs, {
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
+
+    // Explicitly close stdin to prevent Docker/bash from hanging on unclosed input pipe
+    child.stdin?.end();
+
+    const killContainer = () => {
+      if (isTerminated) return;
+      isTerminated = true;
+
+      try {
+        execSync(`docker kill ${containerName}`, {
+          stdio: 'ignore',
+          timeout: 2000, // Timeout prevents execSync from blocking Node event loop
+        });
+      } catch {
+        // Container may have already terminated
+      }
+
+      try {
+        child.kill('SIGKILL');
+      } catch {
+        // Child process may have already exited
+      }
+    };
 
     // Wall-clock kill timer (kills the entire container, not only process)
     const wallClockTimer = setTimeout(() => {
       wallTimeExceeded = true;
-      try {
-        execSync(`docker kill ${containerName}`, { stdio: 'ignore' });
-      } catch {
-        // Container may have already terminated
-      }
-      child.kill('SIGKILL');
+      killContainer();
     }, limits.wallClockLimitMs);
 
-    child.stdout.on('data', (chunk: Buffer) => {
+    // Absolute failsafe timer to guarantee Promise resolution
+    const failsafeTimer = setTimeout(() => {
+      if (!resolved) {
+        killContainer();
+        finalize(128 + 9);
+      }
+    }, limits.wallClockLimitMs + 5000);
+
+    child.stdout?.on('data', (chunk: Buffer) => {
       if (stdout.length + chunk.length > maxOutputBytes) {
         outputLimitExceeded = true;
-        try {
-          execSync(`docker kill ${containerName}`, { stdio: 'ignore' });
-        } catch {
-          // Container may have already terminated
-        }
-        child.kill('SIGKILL');
+        child.stdout?.destroy();
+        killContainer();
       } else {
         stdout += chunk.toString();
       }
     });
 
-    child.stderr.on('data', (chunk: Buffer) => {
+    child.stderr?.on('data', (chunk: Buffer) => {
       stderr += chunk.toString();
     });
 
-    child.on('close', (code) => {
-      clearTimeout(wallClockTimer);
-      const executionTime = Date.now() - startTime;
+    const finalize = (code: number | null) => {
+      if (resolved) return;
+      resolved = true;
 
+      clearTimeout(wallClockTimer);
+      clearTimeout(failsafeTimer);
+
+      const executionTime = Date.now() - startTime;
       let status: ExecutionStatus = 'ACCEPTED';
 
       if (outputLimitExceeded) {
@@ -196,10 +226,16 @@ async function executeInDockerSandbox(
         stdout,
         stderr,
       });
-    });
+    };
 
+    child.on('close', (code) => finalize(code));
+    child.on('exit', (code) => finalize(code));
     child.on('error', (err) => {
+      if (resolved) return;
+      resolved = true;
       clearTimeout(wallClockTimer);
+      clearTimeout(failsafeTimer);
+
       resolve({
         compileSuccess: false,
         compileOutput: err.message,
