@@ -21,6 +21,15 @@ export interface StoredSubmission extends SubmissionJob {
 // Extend the shared contract without changing the existing route's mock data.
 export interface StoredReviewQueueItem extends ReviewQueueItem {
   labId: string;
+  reviewDecision?: ReviewDecision;
+}
+
+export type ReviewDecision =
+  | { decision: 'confirm' }
+  | { decision: 'override'; newVerdict: Verdict; reason?: string };
+
+export interface StoredLab extends Lab {
+  status?: 'published';
 }
 
 export interface ReviewQueueFilters {
@@ -36,7 +45,7 @@ export interface StoredReviewQueueResponse extends ReviewQueueResponse {
 
 /** In-memory storage. Each instance owns its state; callers receive snapshots. */
 export class DataStore {
-  private readonly labs = new Map<string, Lab>();
+  private readonly labs = new Map<string, StoredLab>();
   private readonly submissions = new Map<string, StoredSubmission>();
   private readonly reviewItems = new Map<string, StoredReviewQueueItem>();
 
@@ -48,7 +57,7 @@ export class DataStore {
     return structuredClone(lab);
   }
 
-  getLab(labId: string): Lab | null {
+  getLab(labId: string): StoredLab | null {
     return structuredClone(this.labs.get(labId) ?? null);
   }
 
@@ -91,6 +100,10 @@ export class DataStore {
       throw new Error(`Review item '${item.id}' already exists.`);
     }
     this.reviewItems.set(item.id, structuredClone(item));
+  }
+
+  getReviewItem(itemId: string): StoredReviewQueueItem | null {
+    return structuredClone(this.reviewItems.get(itemId) ?? null);
   }
 
   getReviewQueue(
@@ -136,7 +149,8 @@ export class DataStore {
   // Authentication and class ownership are checked by the calling route.
   reviewItem(
     itemId: string,
-    reviewedBy: AuthUser['id']
+    reviewedBy: AuthUser['id'],
+    decision?: ReviewDecision
   ): StoredReviewQueueItem {
     const item = this.reviewItems.get(itemId);
     if (!item) {
@@ -145,6 +159,15 @@ export class DataStore {
     if (item.status === 'reviewed') {
       throw new Error(`Review item '${itemId}' is already reviewed.`);
     }
+    if (decision?.decision === 'override') {
+      item.verdict = decision.newVerdict;
+      item.unsureReason =
+        decision.newVerdict === 'unsure'
+          ? (item.unsureReason ?? 'model_unsure')
+          : null;
+      if (decision.newVerdict === 'pass') item.evidence = [];
+    }
+    if (decision) item.reviewDecision = structuredClone(decision);
     item.status = 'reviewed';
     item.reviewedBy = reviewedBy;
     item.reviewedAt = new Date().toISOString();
@@ -157,6 +180,17 @@ export class DataStore {
       (item) => item.labId === labId && item.status === 'pending'
     ).length;
     return { canPublish: unreviewedCount === 0, unreviewedCount };
+  }
+
+  /** Called only after an explicit, authorized publish request. */
+  publishLab(labId: string): StoredLab {
+    const lab = this.labs.get(labId);
+    if (!lab) throw new Error(`Lab '${labId}' not found.`);
+    if (!this.getPublishStatus(labId).canPublish) {
+      throw new Error(`Lab '${labId}' still has unreviewed items.`);
+    }
+    lab.status = 'published';
+    return structuredClone(lab);
   }
 }
 
