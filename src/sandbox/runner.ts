@@ -183,21 +183,24 @@ async function executeInDockerSandbox(
       const executionTime = Date.now() - startTime;
       let status: ExecutionStatus = 'ACCEPTED';
 
-      if (outputLimitExceeded) {
-        status = 'OUTPUT_LIMIT_EXCEEDED';
-      } else if (
+      const isCpuTimeExceeded =
         wallTimeExceeded ||
         code === 152 ||
         stderr.includes('CPU time limit') ||
-        stderr.includes('time limit')
-      ) {
-        status = 'TIME_LIMIT_EXCEEDED';
-      } else if (
-        code === 137 ||
-        stderr.includes('Killed') ||
+        stderr.includes('time limit') ||
+        ((code === 137 || stderr.includes('Killed')) &&
+          executionTime >= limits.cpuTimeLimitMs * 0.8);
+
+      const isMemoryLimitExceeded =
         stderr.includes('bad_alloc') ||
-        stdout.includes('bad_alloc')
-      ) {
+        stdout.includes('bad_alloc') ||
+        ((code === 137 || stderr.includes('Killed')) && !isCpuTimeExceeded);
+
+      if (outputLimitExceeded) {
+        status = 'OUTPUT_LIMIT_EXCEEDED';
+      } else if (isCpuTimeExceeded) {
+        status = 'TIME_LIMIT_EXCEEDED';
+      } else if (isMemoryLimitExceeded) {
         status = 'MEMORY_LIMIT_EXCEEDED';
       } else if (code !== 0) {
         status = 'RUNTIME_ERROR';
@@ -228,8 +231,8 @@ async function executeInDockerSandbox(
       });
     };
 
+    // Only listen to 'close' to ensure stdio streams have fully flushed
     child.on('close', (code) => finalize(code));
-    child.on('exit', (code) => finalize(code));
     child.on('error', (err) => {
       if (resolved) return;
       resolved = true;

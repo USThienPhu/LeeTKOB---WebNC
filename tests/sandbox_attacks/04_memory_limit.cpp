@@ -9,9 +9,18 @@ int main() {
         return 1;
     }
 
+    // Ghi vào từng trang bộ nhớ
     for (size_t i = 0; i < SIZE; i += 4096) {
         mem[i] = static_cast<char>(i & 0xFF);
     }
+
+    // Bắt buộc đọc lại để compiler không tối ưu hóa loại bỏ allocation
+    volatile long long sum = 0;
+    for (size_t i = 0; i < SIZE; i += 4096) {
+        sum += mem[i];
+    }
+
+    std::cout << "Checksum: " << sum << std::endl;
     delete[] mem;
     return 0;
 }

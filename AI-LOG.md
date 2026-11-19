@@ -127,3 +127,23 @@ Changed:
   - In `.github/workflows/ci.yml`: added `timeout-minutes: 10` on the job level.
 Rejected: Allowing unclosed stdio streams or un-timeouted synchronous execution; rejected running container without init reaper.
 By hand: Ran full test suite verifying 20/20 tests pass in 10.88s with clean formatting, linting, and typechecking.
+
+
+## 2026-11-19 — calculate test execution budget and define CI timeout thresholds
+Tool: Antigravity (Gemini 3.8 Flash)
+Asked for: Estimate total execution time for all tests and provide actionable timeout thresholds to detect and stop potential CI hangs early.
+Kept: The 20-test Vitest suite timings, Docker build overhead, and GitHub Actions runner hardware baselines.
+Changed: Formulated clear phase-by-phase execution budgets (normal ~60-90s, warning >3m, hard cancel at 4m) based on actual Docker execution profiling.
+Rejected: Giving arbitrary guesses; based timing directly on local benchmark (10.88s Vitest execution) and GitHub Actions Ubuntu runner metrics.
+By hand: Verified time allocation per attack test and established user monitoring guidelines.
+
+
+## 2026-11-19 — fix CPU limit and memory read-back optimization failures in sandbox runner
+Tool: Antigravity (Gemini 3.8 Flash)
+Asked for: Fix the 2 test failures in `runner.test.ts` (Test 2 CPU limit and Test 4 Memory limit) based on the root-cause analysis.
+Kept: The 20-test Vitest suite, 9 attack files, and container isolation parameters.
+Changed:
+  - In `src/sandbox/runner.ts`: removed `child.on('exit')` to eliminate stdio flush race condition; disambiguated exit code 137 between CPU limit (`executionTime >= limits.cpuTimeLimitMs * 0.8`) and memory limit (early kernel OOM kill / bad_alloc).
+  - In `tests/sandbox_attacks/04_memory_limit.cpp`: implemented page-by-page read-back loop with a volatile checksum output as mandated by rubric Criterion 2 row 4, preventing GCC `-O2` dead-store optimization from removing the 1 GiB allocation.
+Rejected: Guessing exit code causes without accounting for compiler optimization behavior; rejected checking exit before close.
+By hand: Cross-referenced rubric line 154 warning ("nothing reads the memory back | compiler removed allocation"), verified 20/20 tests pass in 7.96s.
