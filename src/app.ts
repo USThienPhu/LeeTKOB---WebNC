@@ -1,4 +1,5 @@
 import express, { type Request, type Response } from 'express';
+import { labsRouter } from './routes/labs.js';
 import { reviewQueueRouter } from './routes/review-queue.js';
 
 const app = express();
@@ -10,5 +11,6 @@ app.get('/healthz', (_req: Request, res: Response) => {
 });
 
 app.use(reviewQueueRouter);
+app.use(labsRouter);
 
 export default app;
