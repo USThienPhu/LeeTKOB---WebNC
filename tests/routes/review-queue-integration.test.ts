@@ -61,6 +61,37 @@ function getQueue(lab: Lab, query = '', token = 'ta-class-1') {
 }
 
 describe('Review Queue Integration — Dynamic Data', () => {
+  it('applies class scoping, authorization and filters to the versioned alias', async () => {
+    const lab = createLab();
+    const item = pushVerdict(lab);
+    const path = `/api/v1/classes/class-1/labs/${lab.id}/review-queue`;
+    const get = (url = path, token = 'ta-class-1') =>
+      request(app).get(url).set('Authorization', `Bearer ${token}`);
+    const alias = await get();
+    expect(alias.status).toBe(200);
+    expect(alias.body).toEqual((await getQueue(lab)).body);
+    expect(alias.body.items).toEqual([item]);
+    expect((await get(`${path}?verdict=pass`)).body.items).toEqual([]);
+    for (const [url, token, status] of [
+      [
+        path.replace('/classes/class-1/', '/classes/class-2/'),
+        'ta-class-1',
+        404,
+      ],
+      [path, 'ta-class-2', 403],
+      [path, 'student-token', 403],
+      [`${path}?page=0`, 'ta-class-1', 400],
+    ] as const) {
+      const response = await get(url, token);
+      expect(response.status).toBe(status);
+      expect(response.headers['content-type']).toContain(
+        'application/problem+json'
+      );
+      expect(response.body.instance).toBe(url);
+    }
+    expect((await request(app).get(path)).status).toBe(401);
+  });
+
   it('should return verdicts pushed by constraint engine for a specific lab', async () => {
     const lab = createLab();
     const items = [pushVerdict(lab), pushVerdict(lab)];

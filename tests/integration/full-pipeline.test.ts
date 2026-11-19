@@ -1,14 +1,12 @@
-import { randomUUID } from 'node:crypto';
 import request from 'supertest';
 import { afterEach, describe, expect, it } from 'vitest';
 import app from '../../src/app.js';
+import { defaultJudgeWorker } from '../../src/queue/judge-worker.js';
 import { defaultSubmissionQueue } from '../../src/queue/submission-queue.js';
 import { defaultDataStore } from '../../src/store/data-store.js';
 import type {
   Lab,
-  ReviewQueueItem,
   ReviewQueueResponse,
-  Verdict,
 } from '../../src/types/review-queue.types.js';
 
 const cleanCode = `#include <iostream>
@@ -53,11 +51,12 @@ const injectionComment =
 const injectionCode = `${injectionComment}\n${cleanCode}`;
 
 afterEach(() => {
+  defaultJudgeWorker.stop();
   defaultSubmissionQueue.clear();
 });
 
 describe('Full Pipeline — Criterion 1 Scenario', () => {
-  it('requires TA review of all mocked verdicts before publishing the lab', async () => {
+  it('processes submissions through the worker and requires TA review before publishing', async () => {
     // 1. The assigned TA creates the lab through the real API.
     const labBody: Omit<Lab, 'id' | 'classId'> = {
       title: 'sort-merge',
@@ -121,48 +120,29 @@ describe('Full Pipeline — Criterion 1 Scenario', () => {
     const submissionId3 = await submit(injectionCode);
     expect(new Set([submissionId1, submissionId2, submissionId3]).size).toBe(3);
 
-    // 5. Mock the engine boundary: deterministic verdicts, no sandbox or LLM calls.
-    function pushMockVerdicts(
-      submissionId: string,
-      verdicts: [Verdict, Verdict]
-    ): ReviewQueueItem[] {
-      return labBody.constraints.map((constraint, index) => {
-        const verdict = verdicts[index];
-        const evidence =
-          verdict === 'violation'
-            ? [
-                {
-                  line: violationCode.split('\n').indexOf(sortCall) + 1,
-                  text: sortCall,
-                },
-              ]
-            : verdict === 'unsure'
-              ? [{ line: 1, text: injectionComment }]
-              : [];
-        const item: ReviewQueueItem = {
-          id: randomUUID(),
-          submissionId,
-          studentAnonymousId: 'std-100',
-          constraintId: constraint.id,
-          constraintDescription: constraint.description,
-          verdict,
-          suggestedDeduction: verdict === 'pass' ? 0 : constraint.deduction,
-          evidence,
-          // The current contract uses model_unsure for detected injection.
-          unsureReason: verdict === 'unsure' ? 'model_unsure' : null,
-          status: 'pending',
-          reviewedBy: null,
-          reviewedAt: null,
-        };
-        defaultDataStore.addReviewItem({ ...item, labId });
-        return item;
+    // 5. Run the real worker, sandbox runner and current TV2 adapter.
+    // The adapter is still a deterministic fixture: first constraint violates,
+    // second passes for every source. This test verifies orchestration, not
+    // clean/violation/injection detection, which belongs to the TV2 engine.
+    await defaultJudgeWorker.startAndDrain();
+    for (const submissionId of [submissionId1, submissionId2, submissionId3]) {
+      expect(defaultDataStore.getSubmission(submissionId)).toMatchObject({
+        status: 'completed',
+        result: { compileSuccess: true, totalTests: 2 },
+      });
+      const studentView = await request(app)
+        .get(`/api/v1/submissions/${submissionId}`)
+        .set('Authorization', 'Bearer student-token');
+      expect(studentView.status).toBe(200);
+      expect(studentView.body).toEqual({
+        submissionId,
+        status: 'completed',
+        compileSuccess: true,
+        compileOutput: expect.any(String),
+        passedTests: expect.any(Number),
+        totalTests: 2,
       });
     }
-    const expectedItems = [
-      ...pushMockVerdicts(submissionId1, ['pass', 'pass']),
-      ...pushMockVerdicts(submissionId2, ['violation', 'pass']),
-      ...pushMockVerdicts(submissionId3, ['unsure', 'unsure']),
-    ];
 
     // 6. All six items, including passes, require human review.
     const blockedStatus = await request(app)
@@ -199,7 +179,37 @@ describe('Full Pipeline — Criterion 1 Scenario', () => {
       .set('Authorization', 'Bearer ta-class-1');
     expect(queue.status).toBe(200);
     const { items, pagination } = queue.body as ReviewQueueResponse;
-    expect(items).toEqual(expectedItems);
+    expect(items).toHaveLength(6);
+    for (const [submissionId, sourceCode] of [
+      [submissionId1, cleanCode],
+      [submissionId2, violationCode],
+      [submissionId3, injectionCode],
+    ]) {
+      expect(
+        items.filter((item) => item.submissionId === submissionId)
+      ).toEqual(
+        labBody.constraints.map((constraint, index) => ({
+          id: expect.any(String),
+          submissionId,
+          studentAnonymousId: 'std-100',
+          constraintId: constraint.id,
+          constraintDescription: constraint.description,
+          verdict: index === 0 ? 'violation' : 'pass',
+          suggestedDeduction: index === 0 ? constraint.deduction : 0,
+          evidence:
+            index === 0 ? [{ line: 1, text: sourceCode.split('\n')[0] }] : [],
+          unsureReason: null,
+          status: 'pending',
+          reviewedBy: null,
+          reviewedAt: null,
+        }))
+      );
+    }
+    const aliasQueue = await request(app)
+      .get(`${base}/review-queue`)
+      .set('Authorization', 'Bearer ta-class-1');
+    expect(aliasQueue.status).toBe(200);
+    expect(aliasQueue.body).toEqual(queue.body);
     expect(pagination.totalItems).toBe(6);
     for (const item of items) {
       const reviewed = await request(app)

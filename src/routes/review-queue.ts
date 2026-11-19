@@ -117,15 +117,18 @@ const VALID_VERDICTS: (Verdict | 'all')[] = [
 export const reviewQueueRouter = Router();
 
 reviewQueueRouter.get(
-  '/labs/:labId/review-queue',
+  [
+    '/labs/:labId/review-queue',
+    '/api/v1/classes/:classId/labs/:labId/review-queue',
+  ],
   authMiddleware,
-  (req: Request<{ labId: string }>, res: Response) => {
-    const { labId } = req.params;
+  (req: Request<{ labId: string; classId?: string }>, res: Response) => {
+    const { labId, classId } = req.params;
     const user = req.user;
 
     // 1. Kiểm tra tồn tại bài lab
     const lab = defaultDataStore.getLab(labId);
-    if (!lab) {
+    if (!lab || (classId !== undefined && lab.classId !== classId)) {
       notFound(
         res,
         req.originalUrl,

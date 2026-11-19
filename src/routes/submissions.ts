@@ -77,6 +77,13 @@ submissionsRouter.post(
   }
 );
 
+/**
+ * Product Owners' FAQ-08 (2026-10-25), docs/FAQ.md#faq-08: before TA
+ * Publish, hide constraint-review results from BOTH hard rules and the model,
+ * including verdicts, evidence and deductions. FAQ-02 (docs/FAQ.md#faq-02)
+ * allows judge feedback but hides test inputs/outputs. Keep this status endpoint
+ * explicitly allowlisted; never serialize internal review or raw test data.
+ */
 submissionsRouter.get(
   '/api/v1/submissions/:submissionId',
   authMiddleware,
